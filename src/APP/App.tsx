@@ -3,6 +3,8 @@ import LoginScreen from './auth/LoginScreen'
 import RegisterScreen from './auth/RegisterScreen'
 import { useAuth } from './auth/useAuth'
 import AppHome from './AppHome'
+import InterestsSetupScreen from './onboarding/InterestsSetupScreen'
+import ProfileSetupScreen from './onboarding/ProfileSetupScreen'
 import type { AuthMode } from './types/user'
 import './App.css'
 
@@ -13,9 +15,20 @@ type AppZoneProps = {
 }
 
 function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
-  const { user, loading, loginWithGoogle, logout } = useAuth()
+  const {
+    user,
+    profile,
+    loading,
+    profileLoading,
+    needsProfileSetup,
+    needsInterestsSetup,
+    loginWithGoogle,
+    completeProfile,
+    completeInterests,
+    logout,
+  } = useAuth()
 
-  if (loading) {
+  if (loading || (user && profileLoading && !profile)) {
     return (
       <div className="app-zone app-zone--loading">
         <p>Cargando...</p>
@@ -43,7 +56,15 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
     )
   }
 
-  return <AppHome user={user} onLogout={logout} />
+  if (needsProfileSetup) {
+    return <ProfileSetupScreen user={user} onSubmit={completeProfile} />
+  }
+
+  if (needsInterestsSetup) {
+    return <InterestsSetupScreen onSubmit={completeInterests} />
+  }
+
+  return <AppHome user={user} profile={profile} onLogout={logout} />
 }
 
 function AppZone({ authMode, onBack, onSwitchMode }: AppZoneProps) {

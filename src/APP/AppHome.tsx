@@ -1,13 +1,17 @@
+import type { Usuario } from '../models'
 import type { AppUser } from './types/user'
 import './AppHome.css'
 
 type AppHomeProps = {
   user: AppUser
+  profile: Partial<Usuario> | null
   onLogout: () => void
 }
 
-function AppHome({ user, onLogout }: AppHomeProps) {
-  const firstName = user.name?.split(' ')[0] ?? 'amigo'
+function AppHome({ user, profile, onLogout }: AppHomeProps) {
+  const displayName = profile?.alias ?? user.name?.split(' ')[0] ?? 'amigo'
+  const rolLabel =
+    profile?.rol_enum === 'ayudador' ? '🌤️ Quiero ayudar' : '🌧️ Necesito apoyo'
 
   return (
     <div className="app-home">
@@ -23,14 +27,15 @@ function AppHome({ user, onLogout }: AppHomeProps) {
           <img
             className="app-home__avatar"
             src={user.picture}
-            alt={user.name ?? user.email}
+            alt={displayName}
           />
         )}
-        <h1>Hola, {firstName} 👋</h1>
-        <p>Ya estás dentro. Pronto podrás elegir tu perfil y encontrar tu match.</p>
+        <h1>Hola, {displayName} 👋</h1>
+        <p>Ya estás dentro. Pronto te conectaremos con tu match.</p>
         <div className="app-home__chips">
-          <span>🌧️ Necesito apoyo</span>
-          <span>🌤️ Quiero ayudar</span>
+          <span>{rolLabel}</span>
+          {profile?.pais && <span>📍 {profile.pais}</span>}
+          {profile?.idioma && <span>🗣️ {profile.idioma}</span>}
         </div>
       </main>
     </div>

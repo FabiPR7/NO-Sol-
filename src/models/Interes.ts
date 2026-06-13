@@ -1,6 +1,8 @@
+export const INTERESTS_COLLECTION = 'interests'
+
 export interface Interes {
-  id: number
+  id: string
   nombre: string
 }
 
-export type InteresInput = Omit<Interes, 'id'>
+export type InteresData = Pick<Interes, 'nombre'>

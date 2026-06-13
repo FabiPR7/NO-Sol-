@@ -1,6 +1,8 @@
+export const USUARIO_INTERES_COLLECTION = 'usuariointeres'
+
 export interface UsuarioInteres {
   usuario_id: string
-  interese_id: number
+  interes_id: string
 }
 
 export type UsuarioInteresInput = UsuarioInteres

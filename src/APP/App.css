@@ -1,0 +1,58 @@
+.app-zone--loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #faf5ee;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #5a4f48;
+}
+
+.app-zone--missing {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #faf5ee;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.app-zone__missing-card {
+  max-width: 480px;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(44, 36, 32, 0.1);
+  text-align: center;
+}
+
+.app-zone__missing-card h1 {
+  margin: 0 0 1rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.5rem;
+}
+
+.app-zone__missing-card p {
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+  color: #5a4f48;
+}
+
+.app-zone__missing-card code {
+  font-size: 0.85rem;
+  background: #f0e8dc;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.app-zone__missing-card button {
+  border: none;
+  background: #e07a54;
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+}

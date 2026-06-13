@@ -1,4 +1,9 @@
 import './Web.css'
+import type { AuthMode } from '../APP/types/user'
+
+type WebProps = {
+  onEnterApp: (mode: AuthMode) => void
+}
 
 const photos = {
   heroBg:
@@ -27,7 +32,7 @@ const strip = [
   { emoji: '🤝', title: 'Match real', text: 'Gustos, idioma y zona' },
 ]
 
-function Web() {
+function Web({ onEnterApp }: WebProps) {
   return (
     <div className="web">
       <section
@@ -41,10 +46,10 @@ function Web() {
             No+Sol@
           </a>
           <nav className="web-nav">
-            <button type="button" className="web-btn web-btn--glass">
+            <button type="button" className="web-btn web-btn--glass" onClick={() => onEnterApp('login')}>
               Entrar
             </button>
-            <button type="button" className="web-btn web-btn--warm">
+            <button type="button" className="web-btn web-btn--warm" onClick={() => onEnterApp('register')}>
               Unirme gratis
             </button>
           </nav>
@@ -64,10 +69,10 @@ function Web() {
               Por tus gustos, tu idioma y tu zona. Sin postureo, sin prisa.
             </p>
             <div className="web-cover__actions">
-              <button type="button" className="web-btn web-btn--warm web-btn--xl">
+              <button type="button" className="web-btn web-btn--warm web-btn--xl" onClick={() => onEnterApp('register')}>
                 Quiero unirme
               </button>
-              <button type="button" className="web-btn web-btn--glass web-btn--xl">
+              <button type="button" className="web-btn web-btn--glass web-btn--xl" onClick={() => onEnterApp('login')}>
                 Ya tengo cuenta
               </button>
             </div>
@@ -147,7 +152,7 @@ function Web() {
                 Para días grises, noches largas o momentos en los que hablar cuesta.
                 Te emparejamos con alguien que quiera escucharte de verdad.
               </p>
-              <button type="button" className="web-btn web-btn--warm">
+              <button type="button" className="web-btn web-btn--warm" onClick={() => onEnterApp('register')}>
                 Busco apoyo →
               </button>
             </div>
@@ -162,7 +167,7 @@ function Web() {
                 No hace falta ser experto. Basta con empatía, tiempo y ganas de
                 estar presente para alguien que lo necesita.
               </p>
-              <button type="button" className="web-btn web-btn--dark">
+              <button type="button" className="web-btn web-btn--dark" onClick={() => onEnterApp('register')}>
                 Quiero ayudar →
               </button>
             </div>
@@ -231,10 +236,10 @@ function Web() {
             Empieza cuando quieras.
           </p>
           <div className="web-cta__actions">
-            <button type="button" className="web-btn web-btn--warm web-btn--xl">
+            <button type="button" className="web-btn web-btn--warm web-btn--xl" onClick={() => onEnterApp('register')}>
               Crear mi cuenta
             </button>
-            <button type="button" className="web-btn web-btn--glass web-btn--xl">
+            <button type="button" className="web-btn web-btn--glass web-btn--xl" onClick={() => onEnterApp('login')}>
               Iniciar sesión
             </button>
           </div>

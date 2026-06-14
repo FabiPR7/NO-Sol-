@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { auth } from '../../firebase'
 import type { Usuario, UsuarioPerfilInput } from '../../models'
+import { hasUserLanguages, saveUserLanguages } from '../services/language'
 import { hasUserInterests, saveUserInterests } from '../services/interes'
 import {
   getUserProfile,
@@ -25,6 +26,7 @@ export function useAuth() {
   const [user, setUser] = useState<AppUser | null>(null)
   const [profile, setProfile] = useState<Partial<Usuario> | null>(null)
   const [interestsComplete, setInterestsComplete] = useState(false)
+  const [languagesComplete, setLanguagesComplete] = useState(false)
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
   const [justRegistered, setJustRegistered] = useState(false)
@@ -32,13 +34,15 @@ export function useAuth() {
   const loadProfile = useCallback(async (uid: string) => {
     setProfileLoading(true)
 
-    const [data, hasInterests] = await Promise.all([
+    const [data, hasInterests, hasLanguages] = await Promise.all([
       getUserProfile(uid),
       hasUserInterests(uid),
+      hasUserLanguages(uid),
     ])
 
     setProfile(data)
     setInterestsComplete(hasInterests)
+    setLanguagesComplete(hasLanguages)
     setProfileLoading(false)
   }, [])
 
@@ -49,6 +53,7 @@ export function useAuth() {
       if (!firebaseUser) {
         setProfile(null)
         setInterestsComplete(false)
+        setLanguagesComplete(false)
         setJustRegistered(false)
       }
 
@@ -74,14 +79,15 @@ export function useAuth() {
   }, [])
 
   const completeProfile = useCallback(
-    async (input: Omit<UsuarioPerfilInput, 'foto_url'>) => {
+    async (
+      input: Omit<UsuarioPerfilInput, 'foto_url'> & { foto_url?: string },
+    ) => {
       if (!user) return
 
       await saveUserProfile(user.uid, user.email, {
         ...input,
-        foto_url: user.picture ?? '',
+        foto_url: input.foto_url ?? user.picture ?? '',
       })
-
       await loadProfile(user.uid)
     },
     [user, loadProfile],
@@ -93,6 +99,16 @@ export function useAuth() {
 
       await saveUserInterests(user.uid, interestIds)
       setInterestsComplete(true)
+    },
+    [user],
+  )
+
+  const completeLanguages = useCallback(
+    async (languageIds: string[]) => {
+      if (!user) return
+
+      await saveUserLanguages(user.uid, languageIds)
+      setLanguagesComplete(true)
       setJustRegistered(false)
     },
     [user],
@@ -107,6 +123,14 @@ export function useAuth() {
   const needsInterestsSetup = Boolean(
     user && justRegistered && profileComplete && !interestsComplete,
   )
+  const needsLanguagesSetup = Boolean(
+    user && justRegistered && profileComplete && interestsComplete && !languagesComplete,
+  )
+
+  const reloadProfile = useCallback(async () => {
+    if (!user) return
+    await loadProfile(user.uid)
+  }, [user, loadProfile])
 
   return {
     user,
@@ -115,11 +139,15 @@ export function useAuth() {
     profileLoading,
     profileComplete,
     interestsComplete,
+    languagesComplete,
     needsProfileSetup,
     needsInterestsSetup,
+    needsLanguagesSetup,
     loginWithGoogle,
     completeProfile,
     completeInterests,
+    completeLanguages,
+    reloadProfile,
     logout,
   }
 }

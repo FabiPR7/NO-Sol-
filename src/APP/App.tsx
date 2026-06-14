@@ -2,8 +2,9 @@ import { isFirebaseConfigured } from '../firebase'
 import LoginScreen from './auth/LoginScreen'
 import RegisterScreen from './auth/RegisterScreen'
 import { useAuth } from './auth/useAuth'
-import AppHome from './AppHome'
+import MainApp from './main/MainApp'
 import InterestsSetupScreen from './onboarding/InterestsSetupScreen'
+import LanguagesSetupScreen from './onboarding/LanguagesSetupScreen'
 import ProfileSetupScreen from './onboarding/ProfileSetupScreen'
 import type { AuthMode } from './types/user'
 import './App.css'
@@ -22,9 +23,12 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
     profileLoading,
     needsProfileSetup,
     needsInterestsSetup,
+    needsLanguagesSetup,
     loginWithGoogle,
     completeProfile,
     completeInterests,
+    completeLanguages,
+    reloadProfile,
     logout,
   } = useAuth()
 
@@ -64,7 +68,18 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
     return <InterestsSetupScreen onSubmit={completeInterests} />
   }
 
-  return <AppHome user={user} profile={profile} onLogout={logout} />
+  if (needsLanguagesSetup) {
+    return <LanguagesSetupScreen onSubmit={completeLanguages} />
+  }
+
+  return (
+    <MainApp
+      user={user}
+      profile={profile}
+      onLogout={logout}
+      onProfileUpdated={reloadProfile}
+    />
+  )
 }
 
 function AppZone({ authMode, onBack, onSwitchMode }: AppZoneProps) {

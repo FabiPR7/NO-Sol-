@@ -53,7 +53,7 @@ function InterestsSetupScreen({ onSubmit }: InterestsSetupScreenProps) {
     <div className="interests-setup">
       <header className="interests-setup__header">
         <span className="interests-setup__logo">No+Sol@</span>
-        <p>Paso 2 de 2 ✨</p>
+        <p>Paso 2 de 3 ✨</p>
       </header>
 
       <main className="interests-setup__main">

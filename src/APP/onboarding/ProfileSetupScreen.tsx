@@ -1,5 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import ProfilePhotoPicker from '../components/ProfilePhotoPicker'
+import { uploadProfilePhoto } from '../services/cloudinary'
 import type { RolUsuario } from '../../models'
+import { getProfilePhotoUrl } from '../utils/profilePhoto'
 import type { AppUser } from '../types/user'
 import './ProfileSetupScreen.css'
 
@@ -8,8 +11,8 @@ type ProfileSetupScreenProps = {
   onSubmit: (data: {
     alias: string
     pais: string
-    idioma: string
     rol_enum: RolUsuario
+    foto_url: string
   }) => Promise<void>
 }
 
@@ -24,15 +27,26 @@ const paises = [
   'Otro',
 ]
 
-const idiomas = ['Español', 'English', 'Português', 'Français', 'Otro']
-
 function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
   const [alias, setAlias] = useState(user.name?.split(' ')[0] ?? '')
   const [pais, setPais] = useState('España')
-  const [idioma, setIdioma] = useState('Español')
   const [rol, setRol] = useState<RolUsuario | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const currentPhotoUrl = photoPreview ?? getProfilePhotoUrl(null, user)
+
+  const handlePhotoSelect = (file: File, previewUrl: string) => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview)
+    }
+
+    setPhotoPreview(previewUrl)
+    setSelectedPhoto(file)
+    setError(null)
+  }
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -51,11 +65,17 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
     setLoading(true)
 
     try {
+      let fotoUrl = user.picture ?? ''
+
+      if (selectedPhoto) {
+        fotoUrl = await uploadProfilePhoto(selectedPhoto, user.uid)
+      }
+
       await onSubmit({
         alias: alias.trim(),
         pais,
-        idioma,
         rol_enum: rol,
+        foto_url: fotoUrl,
       })
     } catch {
       setError('No se pudo guardar tu perfil. Inténtalo de nuevo.')
@@ -68,7 +88,7 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
     <div className="profile-setup">
       <header className="profile-setup__header">
         <span className="profile-setup__logo">No+Sol@</span>
-        <p>Casi listo 🌱</p>
+        <p>Paso 1 de 3 🌱</p>
       </header>
 
       <main className="profile-setup__main">
@@ -82,6 +102,18 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
         </p>
 
         <form className="profile-setup__form" onSubmit={handleSubmit}>
+          <section className="profile-setup__photo">
+            <h2>Tu foto de perfil</h2>
+            <p>Sube una foto tuya o elige una desde tus archivos.</p>
+            <ProfilePhotoPicker
+              photoUrl={currentPhotoUrl}
+              fallbackLabel={alias || user.name || 'Usuario'}
+              onFileSelect={handlePhotoSelect}
+              onError={setError}
+              disabled={loading}
+            />
+          </section>
+
           <section className="profile-setup__roles">
             <h2>¿Qué buscas en No+Sol@?</h2>
             <p>Lo más importante: elige tu camino.</p>
@@ -135,23 +167,12 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
                 ))}
               </select>
             </label>
-
-            <label className="profile-setup__field">
-              <span>Idioma</span>
-              <select value={idioma} onChange={(e) => setIdioma(e.target.value)}>
-                {idiomas.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
           </section>
 
           {error && <p className="profile-setup__error">{error}</p>}
 
           <button type="submit" className="profile-setup__submit" disabled={loading}>
-            {loading ? 'Guardando...' : 'Entrar a No+Sol@ →'}
+            {loading ? 'Guardando...' : 'Continuar →'}
           </button>
         </form>
       </main>

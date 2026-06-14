@@ -14,7 +14,6 @@ export async function saveUserProfile(
       alias: profile.alias,
       foto_url: profile.foto_url,
       rol_enum: profile.rol_enum,
-      idioma: profile.idioma,
       pais: profile.pais,
       creado_en: serverTimestamp(),
     },

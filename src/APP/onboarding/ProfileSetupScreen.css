@@ -1,6 +1,6 @@
 .profile-setup {
   min-height: 100vh;
-  background: linear-gradient(180deg, #faf5ee 0%, #f0e8dc 100%);
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
   color: #2c2420;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -15,9 +15,7 @@
 }
 
 .profile-setup__logo {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
+  display: block;
 }
 
 .profile-setup__header p {
@@ -145,15 +143,15 @@
 }
 
 .profile-setup__role--support.profile-setup__role--active {
-  border-color: #6d8f7b;
-  background: linear-gradient(160deg, #e8f0eb 0%, #ffffff 100%);
-  box-shadow: 0 12px 32px rgba(109, 143, 123, 0.2);
+  border-color: var(--color-teal);
+  background: linear-gradient(160deg, var(--color-teal-pastel-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 12px 32px rgba(58, 142, 138, 0.2);
 }
 
 .profile-setup__role--helper.profile-setup__role--active {
-  border-color: #e07a54;
-  background: linear-gradient(160deg, #ffe8e0 0%, #ffffff 100%);
-  box-shadow: 0 12px 32px rgba(224, 122, 84, 0.2);
+  border-color: var(--color-coral);
+  background: linear-gradient(160deg, var(--color-coral-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 12px 32px rgba(243, 133, 109, 0.2);
 }
 
 .profile-setup__fields {
@@ -185,14 +183,42 @@
   font-family: inherit;
   font-size: 1rem;
   color: #2c2420;
-  background: #faf5ee;
+  background: var(--color-bg);
 }
 
 .profile-setup__field input:focus,
 .profile-setup__field select:focus {
   outline: none;
-  border-color: #e07a54;
+  border-color: var(--color-coral);
   background: #ffffff;
+}
+
+.profile-setup__sexo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.profile-setup__sexo {
+  padding: 0.75rem 0.5rem;
+  border: 2px solid rgba(44, 36, 32, 0.1);
+  border-radius: 14px;
+  background: var(--color-bg);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2c2420;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.profile-setup__sexo--active {
+  border-color: var(--color-coral);
+  background: linear-gradient(135deg, var(--color-coral-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 8px 20px rgba(243, 133, 109, 0.2);
 }
 
 .profile-setup__error {
@@ -210,13 +236,13 @@
   padding: 1rem 1.5rem;
   border: none;
   border-radius: 999px;
-  background: #e07a54;
+  background: var(--color-coral);
   color: #ffffff;
   font-family: inherit;
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 28px rgba(224, 122, 84, 0.35);
+  box-shadow: 0 10px 28px rgba(243, 133, 109, 0.35);
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
@@ -232,6 +258,10 @@
 
 @media (max-width: 640px) {
   .profile-setup__roles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-setup__sexo-grid {
     grid-template-columns: 1fr;
   }
 

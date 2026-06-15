@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import AppLogo from '../../components/AppLogo'
 import ProfilePhotoPicker from '../components/ProfilePhotoPicker'
 import { uploadProfilePhoto } from '../services/cloudinary'
-import type { RolUsuario } from '../../models'
+import type { RolUsuario, SexoUsuario } from '../../models'
 import { getProfilePhotoUrl } from '../utils/profilePhoto'
 import type { AppUser } from '../types/user'
 import './ProfileSetupScreen.css'
@@ -13,6 +14,8 @@ type ProfileSetupScreenProps = {
     pais: string
     rol_enum: RolUsuario
     foto_url: string
+    edad: number
+    sexo: SexoUsuario
   }) => Promise<void>
 }
 
@@ -30,6 +33,8 @@ const paises = [
 function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
   const [alias, setAlias] = useState(user.name?.split(' ')[0] ?? '')
   const [pais, setPais] = useState('España')
+  const [edad, setEdad] = useState('')
+  const [sexo, setSexo] = useState<SexoUsuario | null>(null)
   const [rol, setRol] = useState<RolUsuario | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
@@ -62,6 +67,17 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
       return
     }
 
+    if (!sexo) {
+      setError('Indica tu sexo o elige prefiero no responder.')
+      return
+    }
+
+    const edadNumber = Number(edad)
+    if (!edad.trim() || Number.isNaN(edadNumber) || edadNumber < 16 || edadNumber > 120) {
+      setError('Indica una edad válida (entre 16 y 120 años).')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -76,6 +92,8 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
         pais,
         rol_enum: rol,
         foto_url: fotoUrl,
+        edad: edadNumber,
+        sexo,
       })
     } catch {
       setError('No se pudo guardar tu perfil. Inténtalo de nuevo.')
@@ -87,7 +105,7 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
   return (
     <div className="profile-setup">
       <header className="profile-setup__header">
-        <span className="profile-setup__logo">No+Sol@</span>
+        <AppLogo size="lg" className="profile-setup__logo" />
         <p>Paso 1 de 3 🌱</p>
       </header>
 
@@ -167,6 +185,52 @@ function ProfileSetupScreen({ user, onSubmit }: ProfileSetupScreenProps) {
                 ))}
               </select>
             </label>
+
+            <label className="profile-setup__field">
+              <span>Edad</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={16}
+                max={120}
+                value={edad}
+                onChange={(e) => setEdad(e.target.value)}
+                placeholder="Tu edad"
+              />
+            </label>
+
+            <div className="profile-setup__field">
+              <span>Sexo</span>
+              <div className="profile-setup__sexo-grid">
+                <button
+                  type="button"
+                  className={`profile-setup__sexo${
+                    sexo === 'chico' ? ' profile-setup__sexo--active' : ''
+                  }`}
+                  onClick={() => setSexo('chico')}
+                >
+                  Chico
+                </button>
+                <button
+                  type="button"
+                  className={`profile-setup__sexo${
+                    sexo === 'chica' ? ' profile-setup__sexo--active' : ''
+                  }`}
+                  onClick={() => setSexo('chica')}
+                >
+                  Chica
+                </button>
+                <button
+                  type="button"
+                  className={`profile-setup__sexo${
+                    sexo === 'no_responder' ? ' profile-setup__sexo--active' : ''
+                  }`}
+                  onClick={() => setSexo('no_responder')}
+                >
+                  Prefiero no responder
+                </button>
+              </div>
+            </div>
           </section>
 
           {error && <p className="profile-setup__error">{error}</p>}

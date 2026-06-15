@@ -1,6 +1,6 @@
 .languages-setup {
   min-height: 100vh;
-  background: linear-gradient(180deg, #faf5ee 0%, #f0e8dc 100%);
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
   color: #2c2420;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -15,9 +15,7 @@
 }
 
 .languages-setup__logo {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
+  display: block;
 }
 
 .languages-setup__header p {
@@ -87,9 +85,9 @@
 }
 
 .languages-setup__bubble--active {
-  border-color: #6ba3e8;
-  background: linear-gradient(135deg, #e8f2fc 0%, #ffffff 100%);
-  box-shadow: 0 8px 24px rgba(107, 163, 232, 0.25);
+  border-color: var(--color-teal-pastel);
+  background: linear-gradient(135deg, var(--color-teal-pastel-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 8px 24px rgba(155, 196, 193, 0.25);
   color: #2f5f8f;
 }
 
@@ -116,13 +114,13 @@
   padding: 1rem 1.5rem;
   border: none;
   border-radius: 999px;
-  background: #6ba3e8;
+  background: var(--color-teal-pastel);
   color: #ffffff;
   font-family: inherit;
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 28px rgba(107, 163, 232, 0.35);
+  box-shadow: 0 10px 28px rgba(155, 196, 193, 0.35);
   transition: transform 0.2s ease, background 0.2s ease;
 }
 

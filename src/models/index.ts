@@ -1,5 +1,5 @@
 export { USERS_COLLECTION } from './Usuario'
-export type { RolUsuario, Usuario, UsuarioRegistro, UsuarioPerfilInput, UsuarioInput, UsuarioUpdate } from './Usuario'
+export type { RolUsuario, SexoUsuario, FiltroCualquiera, FiltroSexo, Usuario, UsuarioRegistro, UsuarioPerfilInput, UsuarioFiltrosInput, UsuarioInput, UsuarioUpdate } from './Usuario'
 export { INTERESTS_COLLECTION } from './Interes'
 export type { Interes, InteresData } from './Interes'
 export { USUARIO_INTERES_COLLECTION } from './UsuarioInteres'

@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  background: #faf5ee;
+  background: var(--color-bg);
   color: #2c2420;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -34,7 +34,7 @@
   background: linear-gradient(
     to top,
     rgba(20, 14, 10, 0.9) 0%,
-    rgba(109, 143, 123, 0.35) 100%
+    rgba(58, 142, 138, 0.35) 100%
   );
 }
 
@@ -42,7 +42,7 @@
   background: linear-gradient(
     to top,
     rgba(20, 14, 10, 0.88) 0%,
-    rgba(224, 122, 84, 0.35) 100%
+    rgba(243, 133, 109, 0.35) 100%
   );
 }
 
@@ -54,11 +54,8 @@
 }
 
 .auth__visual-logo {
-  display: inline-block;
+  display: block;
   margin-bottom: 1.5rem;
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.75rem;
-  font-weight: 700;
 }
 
 .auth__visual-quote {
@@ -144,12 +141,12 @@
 
 .auth--login .auth__badge {
   color: #4a6b58;
-  background: #e8f0eb;
+  background: var(--color-teal-pastel-light);
 }
 
 .auth--register .auth__badge {
   color: #a04e2f;
-  background: #ffe8e0;
+  background: var(--color-coral-light);
 }
 
 .auth__panel-inner h1 {
@@ -267,11 +264,11 @@
 }
 
 .auth--login .auth__switch button {
-  color: #6d8f7b;
+  color: var(--color-teal);
 }
 
 .auth--register .auth__switch button {
-  color: #e07a54;
+  color: var(--color-coral);
 }
 
 .auth__switch button:hover {

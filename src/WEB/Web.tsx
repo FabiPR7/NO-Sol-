@@ -1,4 +1,5 @@
 import './Web.css'
+import AppLogo from '../components/AppLogo'
 import type { AuthMode } from '../APP/types/user'
 
 type WebProps = {
@@ -43,7 +44,7 @@ function Web({ onEnterApp }: WebProps) {
 
         <header className="web-header">
           <a className="web-logo" href="#">
-            No+Sol@
+            <AppLogo size="hero" />
           </a>
           <nav className="web-nav">
             <button type="button" className="web-btn web-btn--glass" onClick={() => onEnterApp('login')}>
@@ -247,7 +248,7 @@ function Web({ onEnterApp }: WebProps) {
       </section>
 
       <footer className="web-footer">
-        <span className="web-logo">No+Sol@</span>
+        <AppLogo size="hero" className="web-footer__logo" />
         <p>Conectando personas. Una conversación a la vez. 💛</p>
       </footer>
     </div>

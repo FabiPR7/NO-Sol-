@@ -1,13 +1,15 @@
 import { useState } from 'react'
+import AppLogo from '../../components/AppLogo'
 import type { Usuario } from '../../models'
 import { getProfilePhotoUrl } from '../utils/profilePhoto'
 import type { AppUser } from '../types/user'
 import ChatsTab from './tabs/ChatsTab'
 import ProfileTab from './tabs/ProfileTab'
 import SearchTab from './tabs/SearchTab'
+import SettingsTab from './tabs/SettingsTab'
 import './MainApp.css'
 
-export type MainTab = 'search' | 'chats' | 'profile'
+export type MainTab = 'settings' | 'search' | 'chats' | 'profile'
 
 type MainAppProps = {
   user: AppUser
@@ -25,7 +27,7 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
     <div className="main-app">
       <header className="main-app__header">
         <div className="main-app__header-left">
-          <span className="main-app__logo">No+Sol@</span>
+          <AppLogo size="lg" className="main-app__logo" />
           <p>Hola, {displayName} 👋</p>
         </div>
 
@@ -48,6 +50,13 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
       </header>
 
       <main className="main-app__content">
+        {activeTab === 'settings' && (
+          <SettingsTab
+            user={user}
+            profile={profile}
+            onFiltersUpdated={onProfileUpdated}
+          />
+        )}
         {activeTab === 'search' && <SearchTab profile={profile} />}
         {activeTab === 'chats' && <ChatsTab />}
         {activeTab === 'profile' && (
@@ -60,6 +69,19 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
       </main>
 
       <nav className="main-app__tabs" aria-label="Menú principal">
+        <button
+          type="button"
+          className={`main-app__tab${
+            activeTab === 'settings' ? ' main-app__tab--active' : ''
+          }`}
+          onClick={() => setActiveTab('settings')}
+        >
+          <span className="main-app__tab-icon" aria-hidden="true">
+            ⚙️
+          </span>
+          <span>Ajustes</span>
+        </button>
+
         <button
           type="button"
           className={`main-app__tab${

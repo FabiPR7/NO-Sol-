@@ -2,8 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #faf5ee;
-  color: #2c2420;
+  background: var(--color-bg);
+  color: var(--color-ink);
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
@@ -13,7 +13,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  background: #ffffff;
+  background: var(--color-white);
   border-bottom: 1px solid rgba(44, 36, 32, 0.08);
   position: sticky;
   top: 0;
@@ -23,13 +23,11 @@
 .main-app__header-left p {
   margin: 0.15rem 0 0;
   font-size: 0.85rem;
-  color: #5a4f48;
+  color: var(--color-ink-soft);
 }
 
 .main-app__logo {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.35rem;
-  font-weight: 700;
+  display: block;
 }
 
 .main-app__header-right {
@@ -43,7 +41,7 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--color-white);
   box-shadow: 0 4px 12px rgba(44, 36, 32, 0.1);
 }
 
@@ -51,8 +49,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e07a54;
-  color: #ffffff;
+  background: var(--color-coral);
+  color: var(--color-white);
   font-family: 'Fraunces', Georgia, serif;
   font-size: 1rem;
   font-weight: 700;
@@ -64,7 +62,7 @@
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #5a4f48;
+  color: var(--color-ink-soft);
   cursor: pointer;
   padding: 0.45rem 0.65rem;
   border-radius: 999px;
@@ -72,7 +70,7 @@
 
 .main-app__logout:hover {
   background: rgba(44, 36, 32, 0.06);
-  color: #2c2420;
+  color: var(--color-ink);
 }
 
 .main-app__content {
@@ -87,7 +85,7 @@
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   padding: 0.45rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.96);
@@ -105,9 +103,9 @@
   border: none;
   background: transparent;
   font-family: inherit;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: #5a4f48;
+  color: var(--color-ink-soft);
   cursor: pointer;
   border-radius: 14px;
   transition: color 0.2s ease, background 0.2s ease;
@@ -119,8 +117,8 @@
 }
 
 .main-app__tab--active {
-  color: #e07a54;
-  background: rgba(224, 122, 84, 0.1);
+  color: var(--color-coral);
+  background: rgba(243, 133, 109, 0.1);
 }
 
 .main-app__tab:hover {
@@ -128,7 +126,7 @@
 }
 
 .main-app__tab--active:hover {
-  background: rgba(224, 122, 84, 0.14);
+  background: rgba(243, 133, 109, 0.14);
 }
 
 @media (min-width: 768px) {

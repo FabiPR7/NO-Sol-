@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import AppLogo from '../../components/AppLogo'
 import type { Language } from '../../models'
 import { listLanguages } from '../services/language'
 import './LanguagesSetupScreen.css'
@@ -52,7 +53,7 @@ function LanguagesSetupScreen({ onSubmit }: LanguagesSetupScreenProps) {
   return (
     <div className="languages-setup">
       <header className="languages-setup__header">
-        <span className="languages-setup__logo">No+Sol@</span>
+        <AppLogo size="lg" className="languages-setup__logo" />
         <p>Paso 3 de 3 🗣️</p>
       </header>
 

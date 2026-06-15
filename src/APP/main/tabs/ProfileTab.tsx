@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import ProfilePhotoPicker from '../../components/ProfilePhotoPicker'
-import type { Interes, Language, RolUsuario, Usuario } from '../../../models'
+import type { Interes, Language, RolUsuario, SexoUsuario, Usuario } from '../../../models'
 import { uploadProfilePhoto } from '../../services/cloudinary'
 import {
   getUserInterests,
@@ -37,6 +37,8 @@ const paises = [
 function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
   const [alias, setAlias] = useState('')
   const [pais, setPais] = useState('España')
+  const [edad, setEdad] = useState('')
+  const [sexo, setSexo] = useState<SexoUsuario | null>(null)
   const [rol, setRol] = useState<RolUsuario | null>(null)
   const [allInterests, setAllInterests] = useState<Interes[]>([])
   const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([])
@@ -63,6 +65,8 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
   useEffect(() => {
     setAlias(profile?.alias ?? user.name?.split(' ')[0] ?? '')
     setPais(profile?.pais ?? 'España')
+    setEdad(profile?.edad ? String(profile.edad) : '')
+    setSexo(profile?.sexo ?? null)
     setRol(profile?.rol_enum ?? null)
   }, [profile, user.name])
 
@@ -134,6 +138,17 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
       return
     }
 
+    if (!sexo) {
+      setError('Indica tu sexo o elige prefiero no responder.')
+      return
+    }
+
+    const edadNumber = Number(edad)
+    if (!edad.trim() || Number.isNaN(edadNumber) || edadNumber < 16 || edadNumber > 120) {
+      setError('Indica una edad válida (entre 16 y 120 años).')
+      return
+    }
+
     setSaving(true)
 
     try {
@@ -146,6 +161,8 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
       await updateUserProfile(user.uid, {
         alias: alias.trim(),
         pais,
+        edad: edadNumber,
+        sexo,
         rol_enum: rol,
         foto_url: fotoUrl,
       })
@@ -230,6 +247,64 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
                 ))}
               </select>
             </label>
+
+            <label className="profile-tab__field">
+              <span>Edad</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={16}
+                max={120}
+                value={edad}
+                onChange={(e) => {
+                  setSaved(false)
+                  setEdad(e.target.value)
+                }}
+                placeholder="Tu edad"
+              />
+            </label>
+
+            <div className="profile-tab__field">
+              <span>Sexo</span>
+              <div className="profile-tab__sexo-grid">
+                <button
+                  type="button"
+                  className={`profile-tab__sexo${
+                    sexo === 'chico' ? ' profile-tab__sexo--active' : ''
+                  }`}
+                  onClick={() => {
+                    setSaved(false)
+                    setSexo('chico')
+                  }}
+                >
+                  Chico
+                </button>
+                <button
+                  type="button"
+                  className={`profile-tab__sexo${
+                    sexo === 'chica' ? ' profile-tab__sexo--active' : ''
+                  }`}
+                  onClick={() => {
+                    setSaved(false)
+                    setSexo('chica')
+                  }}
+                >
+                  Chica
+                </button>
+                <button
+                  type="button"
+                  className={`profile-tab__sexo${
+                    sexo === 'no_responder' ? ' profile-tab__sexo--active' : ''
+                  }`}
+                  onClick={() => {
+                    setSaved(false)
+                    setSexo('no_responder')
+                  }}
+                >
+                  Prefiero no responder
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AppLogo from '../../components/AppLogo'
 import type { AuthMode } from '../types/user'
 import './AuthScreen.css'
 
@@ -55,7 +56,7 @@ function AuthLayout({
       >
         <div className="auth__visual-shade" />
         <div className="auth__visual-content">
-          <span className="auth__visual-logo">No+Sol@</span>
+          <AppLogo size="auth" className="auth__visual-logo" />
           <p className="auth__visual-quote">
             Gente de verdad.
             <em> Conversaciones de verdad.</em>

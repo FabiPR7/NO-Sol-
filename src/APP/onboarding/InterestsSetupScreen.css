@@ -1,6 +1,6 @@
 .interests-setup {
   min-height: 100vh;
-  background: linear-gradient(180deg, #faf5ee 0%, #f0e8dc 100%);
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-muted) 100%);
   color: #2c2420;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
@@ -15,9 +15,7 @@
 }
 
 .interests-setup__logo {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 700;
+  display: block;
 }
 
 .interests-setup__header p {
@@ -87,9 +85,9 @@
 }
 
 .interests-setup__bubble--active {
-  border-color: #e07a54;
-  background: linear-gradient(135deg, #ffe8e0 0%, #ffffff 100%);
-  box-shadow: 0 8px 24px rgba(224, 122, 84, 0.25);
+  border-color: var(--color-coral);
+  background: linear-gradient(135deg, var(--color-coral-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 8px 24px rgba(243, 133, 109, 0.25);
   color: #a04e2f;
 }
 
@@ -116,13 +114,13 @@
   padding: 1rem 1.5rem;
   border: none;
   border-radius: 999px;
-  background: #e07a54;
+  background: var(--color-coral);
   color: #ffffff;
   font-family: inherit;
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 28px rgba(224, 122, 84, 0.35);
+  box-shadow: 0 10px 28px rgba(243, 133, 109, 0.35);
   transition: transform 0.2s ease, background 0.2s ease;
 }
 

@@ -76,13 +76,13 @@
 }
 
 .search-tab__card--video {
-  background: linear-gradient(135deg, #e8f2fc 0%, #ffffff 100%);
-  box-shadow: 0 12px 32px rgba(107, 163, 232, 0.18);
+  background: linear-gradient(135deg, var(--color-teal-pastel-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 12px 32px rgba(155, 196, 193, 0.25);
 }
 
 .search-tab__card--chat {
-  background: linear-gradient(135deg, #ffe8e0 0%, #ffffff 100%);
-  box-shadow: 0 12px 32px rgba(224, 122, 84, 0.18);
+  background: linear-gradient(135deg, var(--color-coral-light) 0%, var(--color-white) 100%);
+  box-shadow: 0 12px 32px rgba(243, 133, 109, 0.2);
 }
 
 .search-tab__info {

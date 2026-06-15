@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import AppLogo from '../../components/AppLogo'
 import type { Interes } from '../../models'
 import { listInterests } from '../services/interes'
 import './InterestsSetupScreen.css'
@@ -52,7 +53,7 @@ function InterestsSetupScreen({ onSubmit }: InterestsSetupScreenProps) {
   return (
     <div className="interests-setup">
       <header className="interests-setup__header">
-        <span className="interests-setup__logo">No+Sol@</span>
+        <AppLogo size="lg" className="interests-setup__logo" />
         <p>Paso 2 de 3 ✨</p>
       </header>
 

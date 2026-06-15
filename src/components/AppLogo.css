@@ -1,0 +1,25 @@
+.app-logo {
+  display: block;
+  width: auto;
+  object-fit: contain;
+}
+
+.app-logo--sm {
+  height: 56px;
+}
+
+.app-logo--md {
+  height: 76px;
+}
+
+.app-logo--lg {
+  height: 96px;
+}
+
+.app-logo--auth {
+  height: 120px;
+}
+
+.app-logo--hero {
+  height: 108px;
+}

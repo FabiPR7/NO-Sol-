@@ -48,6 +48,14 @@
   box-shadow: 0 4px 16px rgba(44, 36, 32, 0.06);
 }
 
+.profile-tab__bio {
+  margin: 0.85rem 0 0;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #5a4f48;
+}
+
 .profile-tab__form {
   display: flex;
   flex-direction: column;
@@ -98,7 +106,8 @@
 }
 
 .profile-tab__field input,
-.profile-tab__field select {
+.profile-tab__field select,
+.profile-tab__textarea {
   padding: 0.85rem 1rem;
   border: 1.5px solid rgba(44, 36, 32, 0.1);
   border-radius: 14px;
@@ -109,8 +118,23 @@
   background: var(--color-bg);
 }
 
+.profile-tab__textarea {
+  resize: vertical;
+  min-height: 6.5rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.profile-tab__char-count {
+  align-self: flex-end;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8a7f78;
+}
+
 .profile-tab__field input:focus,
-.profile-tab__field select:focus {
+.profile-tab__field select:focus,
+.profile-tab__textarea:focus {
   outline: none;
   border-color: var(--color-coral);
   background: #ffffff;

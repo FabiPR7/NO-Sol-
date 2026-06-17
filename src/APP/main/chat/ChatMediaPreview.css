@@ -1,0 +1,107 @@
+.chat-media-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.chat-media-preview__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 36, 35, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.chat-media-preview__card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 420px);
+  padding: 1.25rem;
+  border-radius: 22px;
+  background: var(--color-white);
+  box-shadow: 0 20px 50px rgba(26, 36, 35, 0.22);
+}
+
+.chat-media-preview__title {
+  margin: 0 0 1rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.35rem;
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.chat-media-preview__content {
+  margin-bottom: 1.15rem;
+}
+
+.chat-media-preview__photo {
+  display: block;
+  width: 100%;
+  max-height: 52vh;
+  object-fit: contain;
+  border-radius: 16px;
+  background: var(--color-bg);
+}
+
+.chat-media-preview__audio-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  background: var(--color-teal-pastel-light);
+}
+
+.chat-media-preview__audio-wrap p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-ink-soft);
+  text-align: center;
+}
+
+.chat-media-preview__audio {
+  width: 100%;
+  max-width: 320px;
+  height: 42px;
+}
+
+.chat-media-preview__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.chat-media-preview__btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.chat-media-preview__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.chat-media-preview__btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.chat-media-preview__btn--cancel {
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+  border: 1.5px solid rgba(44, 36, 32, 0.1);
+}
+
+.chat-media-preview__btn--confirm {
+  background: var(--color-teal);
+  color: var(--color-white);
+}

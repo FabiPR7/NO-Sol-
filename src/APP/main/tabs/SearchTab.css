@@ -94,7 +94,17 @@
   margin: 0;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #5a4f48;
+  color: var(--color-ink-soft);
+}
+
+.search-tab__error {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  border-radius: 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,6 +2,7 @@ import { isFirebaseConfigured } from '../firebase'
 import LoginScreen from './auth/LoginScreen'
 import RegisterScreen from './auth/RegisterScreen'
 import { useAuth } from './auth/useAuth'
+import ModerationScreen from './moderation/ModerationScreen'
 import MainApp from './main/MainApp'
 import InterestsSetupScreen from './onboarding/InterestsSetupScreen'
 import LanguagesSetupScreen from './onboarding/LanguagesSetupScreen'
@@ -24,6 +25,8 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
     needsProfileSetup,
     needsInterestsSetup,
     needsLanguagesSetup,
+    authError,
+    moderationStatus,
     loginWithGoogle,
     completeProfile,
     completeInterests,
@@ -47,6 +50,7 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
           onBack={onBack}
           onGoRegister={() => onSwitchMode('register')}
           onGoogleSignIn={loginWithGoogle}
+          authError={authError}
         />
       )
     }
@@ -56,6 +60,7 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
         onBack={onBack}
         onGoLogin={() => onSwitchMode('login')}
         onGoogleSignIn={loginWithGoogle}
+        authError={authError}
       />
     )
   }
@@ -70,6 +75,10 @@ function AppContent({ authMode, onBack, onSwitchMode }: AppZoneProps) {
 
   if (needsLanguagesSetup) {
     return <LanguagesSetupScreen onSubmit={completeLanguages} />
+  }
+
+  if (moderationStatus.type !== 'none') {
+    return <ModerationScreen status={moderationStatus} onLogout={logout} />
   }
 
   return (

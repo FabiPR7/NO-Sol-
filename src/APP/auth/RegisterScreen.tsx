@@ -5,9 +5,10 @@ type RegisterScreenProps = {
   onBack: () => void
   onGoLogin: () => void
   onGoogleSignIn: (mode: AuthMode) => Promise<void>
+  authError?: string | null
 }
 
-function RegisterScreen({ onBack, onGoLogin, onGoogleSignIn }: RegisterScreenProps) {
+function RegisterScreen({ onBack, onGoLogin, onGoogleSignIn, authError }: RegisterScreenProps) {
   return (
     <AuthLayout
       variant="register"
@@ -21,6 +22,7 @@ function RegisterScreen({ onBack, onGoLogin, onGoogleSignIn }: RegisterScreenPro
       onBack={onBack}
       onSwitch={onGoLogin}
       onGoogleSignIn={onGoogleSignIn}
+      authError={authError}
     />
   )
 }

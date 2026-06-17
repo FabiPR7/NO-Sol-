@@ -11,6 +11,7 @@ export async function updateUserProfile(
   const data: UsuarioUpdate = {}
 
   if (profile.alias !== undefined) data.alias = profile.alias
+  if (profile.descripcion !== undefined) data.descripcion = profile.descripcion
   if (profile.pais !== undefined) data.pais = profile.pais
   if (profile.edad !== undefined) data.edad = profile.edad
   if (profile.sexo !== undefined) data.sexo = profile.sexo

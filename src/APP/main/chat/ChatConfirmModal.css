@@ -1,0 +1,75 @@
+.chat-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.chat-confirm-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(26, 36, 35, 0.45);
+  cursor: pointer;
+}
+
+.chat-confirm-modal__panel {
+  position: relative;
+  width: min(100%, 22rem);
+  padding: 1.35rem 1.25rem;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(44, 36, 32, 0.18);
+}
+
+.chat-confirm-modal__panel h2 {
+  margin: 0 0 0.65rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.25rem;
+}
+
+.chat-confirm-modal__panel p {
+  margin: 0 0 1.1rem;
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+}
+
+.chat-confirm-modal__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.chat-confirm-modal__cancel,
+.chat-confirm-modal__confirm {
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-confirm-modal__cancel {
+  border: 1.5px solid rgba(44, 36, 32, 0.12);
+  background: #ffffff;
+  color: var(--color-ink-soft);
+}
+
+.chat-confirm-modal__confirm {
+  border: none;
+  background: var(--color-teal);
+  color: #ffffff;
+}
+
+.chat-confirm-modal__confirm--danger {
+  background: linear-gradient(135deg, var(--color-coral) 0%, #e06f55 100%);
+}
+
+.chat-confirm-modal__confirm:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}

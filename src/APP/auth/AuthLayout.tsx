@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AppLogo from '../../components/AppLogo'
 import type { AuthMode } from '../types/user'
 import './AuthScreen.css'
@@ -15,6 +15,7 @@ type AuthLayoutProps = {
   onBack: () => void
   onSwitch: () => void
   onGoogleSignIn: (mode: AuthMode) => Promise<void>
+  authError?: string | null
 }
 
 function AuthLayout({
@@ -29,9 +30,16 @@ function AuthLayout({
   onBack,
   onSwitch,
   onGoogleSignIn,
+  authError,
 }: AuthLayoutProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError)
+    }
+  }, [authError])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
@@ -40,9 +48,18 @@ function AuthLayout({
     try {
       await onGoogleSignIn(variant)
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'No se pudo iniciar sesión con Google.'
-      setError(message)
+      const code =
+        err && typeof err === 'object' && 'code' in err
+          ? String((err as { code: string }).code)
+          : ''
+
+      if (code === 'auth/popup-closed-by-user') {
+        setError('Se cerró la ventana de Google antes de terminar. Inténtalo otra vez.')
+      } else {
+        const message =
+          err instanceof Error ? err.message : 'No se pudo iniciar sesión con Google.'
+        setError(message)
+      }
     } finally {
       setLoading(false)
     }

@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
 import { auth } from '../../firebase'
-import type { Usuario, UsuarioPerfilInput } from '../../models'
+import type { Usuario, UsuarioPerfilInput, ModerationStatus } from '../../models'
 import { hasUserLanguages, saveUserLanguages } from '../services/language'
 import { hasUserInterests, saveUserInterests } from '../services/interes'
+import { parseModerationStatus } from '../services/moderation'
 import {
+  consumeAuthBootstrapResult,
+  getAuthBootstrapError,
   getUserProfile,
   isProfileComplete,
   loginUser,
@@ -30,6 +33,13 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
   const [justRegistered, setJustRegistered] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [moderationStatus, setModerationStatus] = useState<ModerationStatus>({
+    type: 'none',
+    sancionHasta: null,
+    castigos: 0,
+    denunciasRecibidas: 0,
+  })
 
   const loadProfile = useCallback(async (uid: string) => {
     setProfileLoading(true)
@@ -41,24 +51,62 @@ export function useAuth() {
     ])
 
     setProfile(data)
+    setModerationStatus(parseModerationStatus(data))
     setInterestsComplete(hasInterests)
     setLanguagesComplete(hasLanguages)
     setProfileLoading(false)
   }, [])
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser ? mapFirebaseUser(firebaseUser) : null)
+    let unsubscribe = () => {}
 
-      if (!firebaseUser) {
-        setProfile(null)
-        setInterestsComplete(false)
-        setLanguagesComplete(false)
-        setJustRegistered(false)
+    const init = async () => {
+      setLoading(true)
+
+      try {
+        const bootstrap = consumeAuthBootstrapResult()
+        if (bootstrap) {
+          const result = await bootstrap
+          if (result?.mode === 'register') {
+            setJustRegistered(true)
+          }
+        }
+
+        const bootstrapError = getAuthBootstrapError()
+        if (bootstrapError) {
+          setAuthError(bootstrapError)
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'No se pudo completar el inicio de sesión con Google.'
+        setAuthError(message)
       }
 
-      setLoading(false)
-    })
+      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser ? mapFirebaseUser(firebaseUser) : null)
+
+        if (!firebaseUser) {
+          setProfile(null)
+          setModerationStatus({
+            type: 'none',
+            sancionHasta: null,
+            castigos: 0,
+            denunciasRecibidas: 0,
+          })
+          setInterestsComplete(false)
+          setLanguagesComplete(false)
+          setJustRegistered(false)
+        }
+
+        setLoading(false)
+      })
+    }
+
+    void init()
+
+    return () => unsubscribe()
   }, [])
 
   useEffect(() => {
@@ -68,14 +116,25 @@ export function useAuth() {
   }, [user, loadProfile])
 
   const loginWithGoogle = useCallback(async (mode: AuthMode) => {
-    if (mode === 'login') {
-      await loginUser()
-      setJustRegistered(false)
-      return
-    }
+    setAuthError(null)
 
-    await registerUser()
-    setJustRegistered(true)
+    try {
+      if (mode === 'login') {
+        await loginUser()
+        setJustRegistered(false)
+        return
+      }
+
+      await registerUser()
+      setJustRegistered(true)
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'No se pudo iniciar sesión con Google.'
+      setAuthError(message)
+      throw error
+    }
   }, [])
 
   const completeProfile = useCallback(
@@ -143,6 +202,8 @@ export function useAuth() {
     needsProfileSetup,
     needsInterestsSetup,
     needsLanguagesSetup,
+    authError,
+    moderationStatus,
     loginWithGoogle,
     completeProfile,
     completeInterests,

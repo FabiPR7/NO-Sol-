@@ -9,6 +9,8 @@ export interface Usuario {
   id: string
   email: string
   alias: string
+  /** Breve presentación visible en el perfil */
+  descripcion?: string
   foto_url: string
   rol_enum: RolUsuario
   idioma: string
@@ -18,6 +20,14 @@ export interface Usuario {
   filtro_sexo: FiltroSexo
   filtro_pais: string | FiltroCualquiera
   filtro_language_id: string | FiltroCualquiera
+  /** Denuncias recibidas de otros usuarios */
+  denuncias_recibidas?: number
+  /** Veces sancionado (cada 5 denuncias) */
+  castigos?: number
+  /** Hasta cuándo no puede usar la app */
+  sancion_hasta?: Date
+  /** Cuenta expulsada permanentemente */
+  expulsado?: boolean
   creado_en: Date
 }
 

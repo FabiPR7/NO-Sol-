@@ -7,6 +7,16 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 
+.main-app--chat-open {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.main-app--chat-open .chat-view {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 .main-app__header {
   display: flex;
   align-items: center;
@@ -109,6 +119,30 @@
   cursor: pointer;
   border-radius: 14px;
   transition: color 0.2s ease, background 0.2s ease;
+}
+
+.main-app__tab-icon-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.main-app__tab-badge {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.55rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-coral);
+  color: #ffffff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1;
+  border: 1.5px solid #ffffff;
 }
 
 .main-app__tab-icon {

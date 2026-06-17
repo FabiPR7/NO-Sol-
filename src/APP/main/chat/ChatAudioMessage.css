@@ -1,0 +1,180 @@
+.chat-audio {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 300px);
+  min-width: 240px;
+}
+
+.chat-audio__play {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.chat-audio__play svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.chat-audio__play:hover {
+  transform: scale(1.04);
+}
+
+.chat-audio__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.chat-audio__wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 28px;
+}
+
+.chat-audio__bar {
+  width: 3px;
+  height: var(--bar-height, 8px);
+  border-radius: 999px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.chat-audio__bar--active {
+  opacity: 1;
+  animation: chat-audio-bar 0.9s ease-in-out infinite alternate;
+}
+
+.chat-audio__bar--active:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.chat-audio__bar--active:nth-child(3n) {
+  animation-delay: 0.2s;
+}
+
+@keyframes chat-audio-bar {
+  from {
+    transform: scaleY(0.72);
+  }
+
+  to {
+    transform: scaleY(1.08);
+  }
+}
+
+.chat-audio__track {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chat-audio__track-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.chat-audio__track-thumb {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.chat-audio__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.chat-audio__label {
+  font-weight: 600;
+}
+
+.chat-audio__time {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+
+.chat-audio--mine .chat-audio__play {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-white);
+}
+
+.chat-audio--mine .chat-audio__bar {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.chat-audio--mine .chat-audio__track {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.chat-audio--mine .chat-audio__track-fill {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.chat-audio--mine .chat-audio__track-thumb {
+  background: var(--color-white);
+  box-shadow: 0 0 0 2px rgba(58, 142, 138, 0.35);
+}
+
+.chat-audio--mine .chat-audio__label,
+.chat-audio--mine .chat-audio__time {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.chat-audio--theirs .chat-audio__play {
+  background: var(--color-teal-pastel-light);
+  color: var(--color-teal);
+}
+
+.chat-audio--theirs .chat-audio__bar {
+  background: var(--color-teal);
+}
+
+.chat-audio--theirs .chat-audio__track {
+  background: rgba(58, 142, 138, 0.15);
+}
+
+.chat-audio--theirs .chat-audio__track-fill {
+  background: var(--color-teal);
+}
+
+.chat-audio--theirs .chat-audio__track-thumb {
+  background: var(--color-teal);
+  box-shadow: 0 0 0 2px rgba(58, 142, 138, 0.18);
+}
+
+.chat-audio--theirs .chat-audio__label {
+  color: var(--color-ink);
+}
+
+.chat-audio--theirs .chat-audio__time {
+  color: var(--color-ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-audio__bar--active {
+    animation: none;
+  }
+}

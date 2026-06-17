@@ -23,6 +23,8 @@ type ProfileTabProps = {
   onProfileUpdated: () => Promise<void>
 }
 
+const MAX_DESCRIPCION = 280
+
 const paises = [
   'España',
   'México',
@@ -36,6 +38,7 @@ const paises = [
 
 function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
   const [alias, setAlias] = useState('')
+  const [descripcion, setDescripcion] = useState('')
   const [pais, setPais] = useState('España')
   const [edad, setEdad] = useState('')
   const [sexo, setSexo] = useState<SexoUsuario | null>(null)
@@ -64,6 +67,7 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
 
   useEffect(() => {
     setAlias(profile?.alias ?? user.name?.split(' ')[0] ?? '')
+    setDescripcion(profile?.descripcion ?? '')
     setPais(profile?.pais ?? 'España')
     setEdad(profile?.edad ? String(profile.edad) : '')
     setSexo(profile?.sexo ?? null)
@@ -160,6 +164,7 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
 
       await updateUserProfile(user.uid, {
         alias: alias.trim(),
+        descripcion: descripcion.trim(),
         pais,
         edad: edadNumber,
         sexo,
@@ -194,6 +199,9 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
         )}
         <h1>{displayName}</h1>
         {rolLabel && <span className="profile-tab__role">{rolLabel}</span>}
+        {descripcion.trim() && (
+          <p className="profile-tab__bio">{descripcion.trim()}</p>
+        )}
       </header>
 
       <form className="profile-tab__form" onSubmit={handleSubmit}>
@@ -306,6 +314,32 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="profile-tab__card">
+          <h2>Sobre ti</h2>
+          <p className="profile-tab__lead">
+            Cuéntanos un poco de ti. Así quien te conozca tendrá más contexto para
+            conversar contigo.
+          </p>
+
+          <label className="profile-tab__field">
+            <span>Descripción</span>
+            <textarea
+              className="profile-tab__textarea"
+              value={descripcion}
+              onChange={(e) => {
+                setSaved(false)
+                setDescripcion(e.target.value.slice(0, MAX_DESCRIPCION))
+              }}
+              placeholder="Ej.: Me gusta leer, caminar y charlar de series. Busco alguien con quien desconectar un rato."
+              maxLength={MAX_DESCRIPCION}
+              rows={4}
+            />
+            <span className="profile-tab__char-count">
+              {descripcion.length}/{MAX_DESCRIPCION}
+            </span>
+          </label>
         </div>
 
         <div className="profile-tab__card">

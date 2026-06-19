@@ -7,6 +7,7 @@ import type {
 } from '../../../models'
 import { listLanguages } from '../../services/language'
 import { updateUserFilters } from '../../services/usuario'
+import TabHero from '../../components/TabHero'
 import type { AppUser } from '../../types/user'
 import './SettingsTab.css'
 
@@ -30,7 +31,7 @@ const paises = [
 const CUALQUIERA: FiltroCualquiera = 'cualquiera'
 
 const sexoFilterOptions: { value: FiltroSexo; label: string }[] = [
-  { value: CUALQUIERA, label: 'Lo que sea' },
+  { value: CUALQUIERA, label: 'Cualquiera' },
   { value: 'chico', label: 'Solo chicos' },
   { value: 'chica', label: 'Solo chicas' },
   { value: 'no_responder', label: 'Prefiero no responder' },
@@ -84,18 +85,24 @@ function SettingsTab({ user, profile, onFiltersUpdated }: SettingsTabProps) {
 
   return (
     <section className="settings-tab">
-      <header className="settings-tab__header">
-        <h1>Ajustes de búsqueda</h1>
-        <p>
-          Elige con quién te gustaría conectar. Puedes dejar todo en &quot;Lo que
-          sea&quot; para no filtrar.
-        </p>
-      </header>
+      <TabHero
+        eyebrow="⚙️ Personaliza"
+        variant="neutral"
+        title={
+          <>
+            ¿Con quién te gustaría{' '}
+            <span className="tab-hero__accent">conectar</span>?
+          </>
+        }
+        lead='Ajusta los filtros o déjalos en "Cualquiera" para abrirte a conocer gente nueva.'
+      />
 
       <form className="settings-tab__form" onSubmit={handleSubmit}>
         <div className="settings-tab__card">
           <h2>Sexo</h2>
-          <p className="settings-tab__lead">Filtra por sexo o déjalo abierto.</p>
+          <p className="settings-tab__lead">
+            Elige un filtro o déjalo en Cualquiera para no limitar.
+          </p>
 
           <div className="settings-tab__options">
             {sexoFilterOptions.map((option) => (
@@ -118,7 +125,9 @@ function SettingsTab({ user, profile, onFiltersUpdated }: SettingsTabProps) {
 
         <div className="settings-tab__card">
           <h2>País</h2>
-          <p className="settings-tab__lead">Busca en un país concreto o en cualquiera.</p>
+          <p className="settings-tab__lead">
+            Conecta con alguien de un país concreto o de cualquier lugar.
+          </p>
 
           <label className="settings-tab__field">
             <span>País preferido</span>
@@ -129,7 +138,7 @@ function SettingsTab({ user, profile, onFiltersUpdated }: SettingsTabProps) {
                 setFiltroPais(e.target.value)
               }}
             >
-              <option value={CUALQUIERA}>Lo que sea</option>
+              <option value={CUALQUIERA}>Cualquiera</option>
               {paises.map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -142,7 +151,7 @@ function SettingsTab({ user, profile, onFiltersUpdated }: SettingsTabProps) {
         <div className="settings-tab__card">
           <h2>Idioma</h2>
           <p className="settings-tab__lead">
-            Filtra por un idioma concreto o acepta cualquiera.
+            Habla en el idioma que te resulte más cómodo o elige Cualquiera.
           </p>
 
           {loading ? (
@@ -157,7 +166,7 @@ function SettingsTab({ user, profile, onFiltersUpdated }: SettingsTabProps) {
                   setFiltroLanguageId(e.target.value)
                 }}
               >
-                <option value={CUALQUIERA}>Lo que sea</option>
+                <option value={CUALQUIERA}>Cualquiera</option>
                 {languages.map((language) => (
                   <option key={language.id} value={language.id}>
                     {language.nombre}

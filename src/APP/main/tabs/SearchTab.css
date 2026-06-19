@@ -2,34 +2,14 @@
   padding: 1.5rem 1.25rem 2rem;
 }
 
-.search-tab__hero {
-  margin-bottom: 1.75rem;
-}
-
-.search-tab__badge {
-  display: inline-block;
-  margin-bottom: 0.85rem;
-  padding: 0.4rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #5a4f48;
-  box-shadow: 0 4px 16px rgba(44, 36, 32, 0.06);
-}
-
-.search-tab__hero h1 {
-  margin: 0 0 0.65rem;
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: clamp(1.65rem, 4vw, 2.2rem);
-  letter-spacing: -0.02em;
-}
-
-.search-tab__hero p {
-  margin: 0;
-  line-height: 1.65;
-  color: #5a4f48;
-  font-size: 1rem;
+.search-tab__section-label {
+  margin: 0 0 0.85rem;
+  padding-left: 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-teal-dark);
 }
 
 .search-tab__actions {
@@ -57,48 +37,71 @@
   transform: translateY(-3px);
 }
 
+.search-tab__card-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.search-tab__card-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.3rem;
+}
+
 .search-tab__card strong {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 1.15rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.search-tab__card-tag {
+  padding: 0.22rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+}
+
+.search-tab__card-tag--teal {
+  background: rgba(58, 142, 138, 0.14);
+  color: var(--color-teal-darker);
+}
+
+.search-tab__card-tag--coral {
+  background: rgba(243, 133, 109, 0.18);
+  color: var(--color-coral-dark);
 }
 
 .search-tab__card p {
   margin: 0;
   font-size: 0.92rem;
-  line-height: 1.45;
-  opacity: 0.85;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
 }
 
 .search-tab__emoji {
-  font-size: 2rem;
+  font-size: 2.15rem;
   flex-shrink: 0;
 }
 
 .search-tab__card--video {
   background: linear-gradient(135deg, var(--color-teal-pastel-light) 0%, var(--color-white) 100%);
-  box-shadow: 0 12px 32px rgba(155, 196, 193, 0.25);
+  border: 1px solid rgba(58, 142, 138, 0.14);
+  box-shadow: 0 12px 32px rgba(155, 196, 193, 0.22);
 }
 
 .search-tab__card--chat {
   background: linear-gradient(135deg, var(--color-coral-light) 0%, var(--color-white) 100%);
-  box-shadow: 0 12px 32px rgba(243, 133, 109, 0.2);
-}
-
-.search-tab__info {
-  margin-top: 2rem;
-  text-align: center;
-}
-
-.search-tab__info p {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-ink-soft);
+  border: 1px solid rgba(243, 133, 109, 0.14);
+  box-shadow: 0 12px 32px rgba(243, 133, 109, 0.18);
 }
 
 .search-tab__error {
-  margin: 0 0 1rem;
+  margin: 1rem 0 0;
   padding: 0.85rem 1rem;
   text-align: center;
   font-size: 0.9rem;

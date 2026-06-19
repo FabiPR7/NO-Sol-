@@ -3,7 +3,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg);
+  background: var(--app-bg-gradient);
+  background-attachment: fixed;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   color: var(--color-ink-soft);
 }
@@ -14,7 +15,8 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: var(--color-bg);
+  background: var(--app-bg-gradient);
+  background-attachment: fixed;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }
 

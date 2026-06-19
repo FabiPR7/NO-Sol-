@@ -26,6 +26,7 @@ export async function buildMatchQueueEntry(
     usuario_id: userId,
     alias: profile.alias ?? 'Usuario',
     foto_url: profile.foto_url ?? '',
+    descripcion: profile.descripcion?.trim() ?? '',
     rol_enum: profile.rol_enum!,
     edad,
     es_menor: isMinorAge(edad),

@@ -186,6 +186,7 @@ function ProfileTab({ user, profile, onProfileUpdated }: ProfileTabProps) {
   return (
     <section className="profile-tab">
       <header className="profile-tab__header">
+        <span className="profile-tab__eyebrow">👤 Tu perfil</span>
         {avatarUrl ? (
           <img
             className="profile-tab__avatar"

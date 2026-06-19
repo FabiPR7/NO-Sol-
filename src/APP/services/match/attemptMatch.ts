@@ -37,7 +37,7 @@ function buildSessionData(
   seeker: MatchQueueEntry,
   partner: MatchQueueEntry,
 ): VideoSessionData | ChatData {
-  return {
+  const base = {
     participante_ids: [userId, partner.usuario_id].sort() as [string, string],
     participante_1_id: userId,
     participante_2_id: partner.usuario_id,
@@ -47,6 +47,16 @@ function buildSessionData(
     participante_2_foto: partner.foto_url,
     activo: true,
   }
+
+  if (seeker.modo === 'video') {
+    return {
+      ...base,
+      participante_1_descripcion: seeker.descripcion ?? '',
+      participante_2_descripcion: partner.descripcion ?? '',
+    }
+  }
+
+  return base
 }
 
 export async function attemptMatch(userId: string): Promise<string | null> {

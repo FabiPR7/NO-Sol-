@@ -1,0 +1,96 @@
+.tab-hero {
+  margin-bottom: 1.5rem;
+  padding: 1.35rem 1.2rem;
+  border-radius: 24px;
+}
+
+.tab-hero--warm {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(253, 238, 233, 0.72) 100%
+  );
+  border: 1px solid rgba(243, 133, 109, 0.16);
+  box-shadow: 0 12px 32px rgba(243, 133, 109, 0.1);
+}
+
+.tab-hero--cool {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(232, 242, 241, 0.78) 100%
+  );
+  border: 1px solid rgba(58, 142, 138, 0.16);
+  box-shadow: 0 12px 32px rgba(155, 196, 193, 0.12);
+}
+
+.tab-hero--neutral {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(245, 239, 232, 0.8) 100%
+  );
+  border: 1px solid rgba(44, 36, 32, 0.08);
+  box-shadow: 0 12px 32px rgba(44, 36, 32, 0.06);
+}
+
+.tab-hero__eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.7rem;
+  padding: 0.38rem 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    var(--color-coral-soft) 0%,
+    var(--color-teal-pastel-light) 100%
+  );
+  color: var(--color-teal-darker);
+}
+
+.tab-hero__title {
+  margin: 0 0 0.55rem;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.55rem, 4.8vw, 2.05rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+}
+
+.tab-hero__accent {
+  color: var(--color-coral-dark);
+}
+
+.tab-hero__accent--teal {
+  color: var(--color-teal-dark);
+}
+
+.tab-hero__lead {
+  margin: 0;
+  font-size: 0.96rem;
+  line-height: 1.62;
+  color: var(--color-ink-soft);
+}
+
+.tab-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.tab-hero__tags li {
+  padding: 0.38rem 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(58, 142, 138, 0.12);
+  color: var(--color-ink-soft);
+}

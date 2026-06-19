@@ -11,6 +11,7 @@ import {
   type ChatLastMessagePreview,
 } from '../../services/chat'
 import { getPartnerFromChat } from '../../services/match/mapChatDocument'
+import TabHero from '../../components/TabHero'
 import './ChatsTab.css'
 
 type ChatsTabProps = {
@@ -95,10 +96,17 @@ function ChatsTab({ userId, unreadCounts, onOpenChat }: ChatsTabProps) {
 
   return (
     <section className="chats-tab">
-      <header className="chats-tab__header">
-        <h1>Chats</h1>
-        <p>Tus conversaciones activas</p>
-      </header>
+      <TabHero
+        eyebrow="💬 Tus vínculos"
+        variant="cool"
+        title={
+          <>
+            Conversaciones que{' '}
+            <span className="tab-hero__accent tab-hero__accent--teal">importan</span>
+          </>
+        }
+        lead="Aquí retomas el hilo con las personas con las que ya conectaste."
+      />
 
       {loading && (
         <p className="chats-tab__loading">Cargando conversaciones...</p>
@@ -109,10 +117,10 @@ function ChatsTab({ userId, unreadCounts, onOpenChat }: ChatsTabProps) {
       {!loading && !error && chats.length === 0 && (
         <div className="chats-tab__empty">
           <span className="chats-tab__emoji">💬</span>
-          <h2>Aún no tienes chats</h2>
+          <h2>Todavía no hay conversaciones</h2>
           <p>
-            Cuando encuentres a alguien en la pestaña Buscar, vuestras
-            conversaciones aparecerán aquí.
+            Cuando conectes con alguien en Buscar, vuestros chats aparecerán aquí
+            para que podáis seguir hablando.
           </p>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { VIDEO_SESSIONS_COLLECTION } from '../../../models'
 import { getOrCreateDailyRoomUrl } from './dailyApi'
@@ -8,7 +8,7 @@ export async function ensureVideoSessionRoom(sessionId: string): Promise<string>
   const snapshot = await getDoc(sessionRef)
 
   if (!snapshot.exists()) {
-    throw new Error('SESSION_NOT_FOUND')
+    throw new Error('No se encontró la sesión de videollamada.')
   }
 
   const existingUrl = snapshot.data().daily_room_url as string | undefined
@@ -20,7 +20,7 @@ export async function ensureVideoSessionRoom(sessionId: string): Promise<string>
   const roomUrl = await getOrCreateDailyRoomUrl(sessionId)
 
   try {
-    await updateDoc(sessionRef, { daily_room_url: roomUrl })
+    await setDoc(sessionRef, { daily_room_url: roomUrl }, { merge: true })
   } catch {
     const latestSnapshot = await getDoc(sessionRef)
     const latestUrl = latestSnapshot.data()?.daily_room_url as string | undefined

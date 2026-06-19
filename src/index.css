@@ -3,6 +3,8 @@
 
 body {
   margin: 0;
+  background: var(--app-bg-gradient);
+  background-attachment: fixed;
 }
 
 #root {

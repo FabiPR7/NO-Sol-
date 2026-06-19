@@ -8,6 +8,7 @@ import {
 } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const DAILY_API_BASE = 'https://api.daily.co/v1'
 
@@ -46,7 +47,8 @@ function attachDailyProxy(
 
     try {
       if (req.method === 'GET' && roomMatch?.[1]) {
-        const response = await fetch(`${DAILY_API_BASE}/rooms/${roomMatch[1]}`, {
+        const roomName = decodeURIComponent(roomMatch[1])
+        const response = await fetch(`${DAILY_API_BASE}/rooms/${encodeURIComponent(roomName)}`, {
           headers: {
             Authorization: `Bearer ${apiKey}`,
           },
@@ -90,19 +92,19 @@ function dailyApiProxy(): Plugin {
     name: 'daily-api-proxy',
     configureServer(server: ViteDevServer) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
-      const apiKey = env.DAILY_API_KEY || env.VITE_DAILY_API_KEY
+      const apiKey = (env.DAILY_API_KEY || env.VITE_DAILY_API_KEY)?.trim()
       attachDailyProxy(server.middlewares, apiKey)
     },
     configurePreviewServer(server: PreviewServer) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
-      const apiKey = env.DAILY_API_KEY || env.VITE_DAILY_API_KEY
+      const apiKey = (env.DAILY_API_KEY || env.VITE_DAILY_API_KEY)?.trim()
       attachDailyProxy(server.middlewares, apiKey)
     },
   }
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), dailyApiProxy()],
+  plugins: [react(), tailwindcss(), basicSsl(), dailyApiProxy()],
   server: {
     host: true,
   },

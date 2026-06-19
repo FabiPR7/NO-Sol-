@@ -5,11 +5,16 @@
   --color-coral: #f3856d;
   --color-coral-dark: #e06f55;
   --color-coral-light: #fde8e3;
+  --color-coral-soft: #fff0ea;
   --color-teal-pastel: #9bc4c1;
   --color-teal-pastel-light: #e8f2f1;
-  --color-bg: #f7f9f9;
-  --color-bg-soft: #eef3f3;
-  --color-bg-muted: #e4eceb;
+  --color-peach: #ffe8d6;
+  --color-lavender: #f0e8f8;
+  --color-bg: #fdf8f4;
+  --color-bg-soft: #f5efe8;
+  --color-bg-muted: #ebe3db;
+  --color-bg-warm: #fff4ec;
+  --color-bg-cool: #eaf6f5;
   --color-white: #ffffff;
   --color-ink: #2c2420;
   --color-ink-soft: #5a4f48;
@@ -22,4 +27,9 @@
   --shadow-ink-medium: rgba(44, 36, 32, 0.1);
   --shadow-teal: rgba(58, 142, 138, 0.25);
   --shadow-coral: rgba(243, 133, 109, 0.35);
+  --app-bg-gradient:
+    radial-gradient(circle at 8% 6%, rgba(243, 133, 109, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 92% 8%, rgba(155, 196, 193, 0.28) 0%, transparent 38%),
+    radial-gradient(circle at 50% 100%, rgba(255, 196, 160, 0.24) 0%, transparent 44%),
+    linear-gradient(180deg, #fdf8f4 0%, #f0f7f6 48%, #fdeee9 100%);
 }

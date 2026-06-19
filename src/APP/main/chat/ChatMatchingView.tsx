@@ -22,16 +22,16 @@ const MATCHING_COPY: Record<
   }
 > = {
   chat: {
-    title: 'Buscando compañía',
-    searching: 'Buscando a alguien compatible contigo...',
-    matched: '¡Encontramos a alguien!',
-    hint: 'Conectamos a quien busca compañía con quien quiere acompañar.',
+    title: 'Buscando tu compañía',
+    searching: 'Estamos buscando a alguien compatible contigo...',
+    matched: '¡Hay alguien esperándote!',
+    hint: 'Unimos a quien necesita compañía con quien quiere acompañar.',
   },
   video: {
-    title: 'Buscando videollamada',
-    searching: 'Buscando a alguien para videollamada...',
-    matched: '¡Listo! Preparando la videollamada...',
-    hint: 'Emparejamos por los mismos filtros, gustos e idioma que en el chat.',
+    title: 'Preparando tu videollamada',
+    searching: 'Buscando a alguien para verte y escucharte...',
+    matched: '¡Listo! Entrando en la videollamada...',
+    hint: 'Mismos filtros, gustos e idioma que en el chat.',
   },
 }
 

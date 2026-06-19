@@ -2,7 +2,8 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  background: var(--color-bg);
+  background: var(--app-bg-gradient);
+  background-attachment: fixed;
   color: #2c2420;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 }

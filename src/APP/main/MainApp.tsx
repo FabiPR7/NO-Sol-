@@ -85,27 +85,29 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
   return (
     <div className="main-app">
       <header className="main-app__header">
-        <div className="main-app__header-left">
-          <AppLogo size="lg" className="main-app__logo" />
-          <p>Hola, {displayName} 👋</p>
-        </div>
+        <button type="button" className="main-app__logout" onClick={onLogout}>
+          Salir
+        </button>
 
-        <div className="main-app__header-right">
+        <AppLogo size="lg" className="main-app__logo" />
+
+        <button
+          type="button"
+          className="main-app__profile"
+          onClick={() => setActiveTab('profile')}
+          aria-label={`Ir a tu perfil, ${displayName}`}
+        >
           {avatarUrl ? (
-            <img
-              className="main-app__avatar"
-              src={avatarUrl}
-              alt={displayName}
-            />
+            <img className="main-app__avatar" src={avatarUrl} alt="" />
           ) : (
-            <div className="main-app__avatar main-app__avatar--fallback">
+            <span className="main-app__avatar main-app__avatar--fallback">
               {displayName.charAt(0).toUpperCase()}
-            </div>
+            </span>
           )}
-          <button type="button" className="main-app__logout" onClick={onLogout}>
-            Salir
-          </button>
-        </div>
+          <span className="main-app__greeting">
+            Hola, <strong>{displayName}</strong>
+          </span>
+        </button>
       </header>
 
       <main className="main-app__content">

@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import type { Usuario } from '../../../models'
+import TabHero from '../../components/TabHero'
 import type { AppUser } from '../../types/user'
 import ChatMatchingView from '../chat/ChatMatchingView'
 import VideoMatchingView from '../video/VideoMatchingView'
@@ -78,16 +79,20 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
 
   return (
     <section className="search-tab">
-      <div className="search-tab__hero">
-        <span className="search-tab__badge">
-          {isHelper ? '🌤️ Modo ayudador' : '🌧️ Modo apoyo'}
-        </span>
-        <h1>Busca tu amigo/a</h1>
-        <p>
-          Te conectamos con alguien compatible por tus gustos, idioma y zona.
-          Elige cómo quieres hablar hoy.
-        </p>
-      </div>
+      <TabHero
+        eyebrow={isHelper ? '🌤️ Modo ayudador' : '🫂 Tu espacio seguro'}
+        variant="warm"
+        title={
+          <>
+            Te conectamos con{' '}
+            <span className="tab-hero__accent">alguien que encaje contigo</span>
+          </>
+        }
+        lead="Miramos tus gustos, idioma y zona para encontrar a la persona adecuada. Tú decides si prefieres chat o videollamada."
+        tags={['Sin juicios', 'A tu ritmo', 'Conexión real']}
+      />
+
+      <p className="search-tab__section-label">¿Cómo quieres hablar hoy?</p>
 
       <div className="search-tab__actions">
         <button
@@ -95,10 +100,17 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
           className="search-tab__card search-tab__card--video"
           onClick={() => startSearch('video')}
         >
-          <span className="search-tab__emoji">📹</span>
-          <div>
-            <strong>Videollamada</strong>
-            <p>Cara a cara, en tiempo real.</p>
+          <span className="search-tab__emoji" aria-hidden="true">
+            📹
+          </span>
+          <div className="search-tab__card-body">
+            <div className="search-tab__card-head">
+              <strong>Videollamada</strong>
+              <span className="search-tab__card-tag search-tab__card-tag--teal">
+                En vivo
+              </span>
+            </div>
+            <p>Os veis y os escucháis en tiempo real, como en la misma habitación.</p>
           </div>
         </button>
 
@@ -107,19 +119,22 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
           className="search-tab__card search-tab__card--chat"
           onClick={() => startSearch('chat')}
         >
-          <span className="search-tab__emoji">💬</span>
-          <div>
-            <strong>Chat</strong>
-            <p>Escribe a tu ritmo, sin prisa.</p>
+          <span className="search-tab__emoji" aria-hidden="true">
+            💬
+          </span>
+          <div className="search-tab__card-body">
+            <div className="search-tab__card-head">
+              <strong>Chat</strong>
+              <span className="search-tab__card-tag search-tab__card-tag--coral">
+                Sin prisa
+              </span>
+            </div>
+            <p>Escribe cuando te apetezca, con calma y sin presión.</p>
           </div>
         </button>
       </div>
 
       {profileError && <p className="search-tab__error">{profileError}</p>}
-
-      <div className="search-tab__info">
-        <p>🫂 Conexión real · Sin juicios · A tu ritmo</p>
-      </div>
     </section>
   )
 }

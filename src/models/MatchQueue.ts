@@ -10,6 +10,7 @@ export interface MatchQueueEntry {
   usuario_id: string
   alias: string
   foto_url: string
+  descripcion?: string
   rol_enum: RolUsuario
   edad: number
   es_menor: boolean

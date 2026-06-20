@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import AppLogo from '../../components/AppLogo'
 import type { AuthMode } from '../types/user'
+import { formatAuthError } from '../services/usuario/formatAuthError'
 import './AuthScreen.css'
 
 type AuthLayoutProps = {
@@ -48,18 +49,7 @@ function AuthLayout({
     try {
       await onGoogleSignIn(variant)
     } catch (err) {
-      const code =
-        err && typeof err === 'object' && 'code' in err
-          ? String((err as { code: string }).code)
-          : ''
-
-      if (code === 'auth/popup-closed-by-user') {
-        setError('Se cerró la ventana de Google antes de terminar. Inténtalo otra vez.')
-      } else {
-        const message =
-          err instanceof Error ? err.message : 'No se pudo iniciar sesión con Google.'
-        setError(message)
-      }
+      setError(formatAuthError(err))
     } finally {
       setLoading(false)
     }

@@ -197,7 +197,7 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
           <HistorialTab
             userId={user.uid}
             userAlias={profile?.alias ?? user.name ?? 'Usuario'}
-            userPhoto={avatarUrl}
+            userPhoto={avatarUrl ?? ''}
             onOpenChat={openChat}
           />
         )}

@@ -84,6 +84,7 @@ function App() {
         }
       }
 
+      clearAppRouteFromUrl()
       clearReturnToAppFlag()
       return
     }

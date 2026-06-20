@@ -1,5 +1,6 @@
 import { signOut, type User } from 'firebase/auth'
 import { auth } from '../../../firebase'
+import { formatAuthError } from './formatAuthError'
 import { signInWithGoogle } from './signInWithGoogle'
 import { userExists } from './userExists'
 
@@ -9,7 +10,14 @@ export async function loginUser(): Promise<User> {
 }
 
 export async function finishLoginUser(firebaseUser: User): Promise<User> {
-  const exists = await userExists(firebaseUser.uid)
+  let exists = false
+
+  try {
+    exists = await userExists(firebaseUser.uid)
+  } catch (error) {
+    await signOut(auth)
+    throw new Error(formatAuthError(error))
+  }
 
   if (!exists) {
     await signOut(auth)

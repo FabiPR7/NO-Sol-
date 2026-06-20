@@ -1,5 +1,9 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import {
+  browserPopupRedirectResolver,
+  getAuth,
+  initializeAuth,
+} from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
 import { getFirestore } from 'firebase/firestore'
 import { getAnalytics } from 'firebase/analytics'
@@ -12,7 +16,18 @@ if (!isFirebaseConfigured()) {
 }
 
 export const firebaseApp = initializeApp(firebaseConfig)
-export const auth = getAuth(firebaseApp)
+
+function createAuth() {
+  try {
+    return initializeAuth(firebaseApp, {
+      popupRedirectResolver: browserPopupRedirectResolver,
+    })
+  } catch {
+    return getAuth(firebaseApp)
+  }
+}
+
+export const auth = createAuth()
 export const database = getDatabase(firebaseApp)
 export const db = getFirestore(firebaseApp)
 

@@ -14,6 +14,7 @@ import {
   registerUser,
   saveUserProfile,
 } from '../services/usuario'
+import { formatAuthError } from '../services/usuario/formatAuthError'
 import type { AppUser, AuthMode } from '../types/user'
 
 function mapFirebaseUser(user: User): AppUser {
@@ -77,11 +78,7 @@ export function useAuth() {
           setAuthError(bootstrapError)
         }
       } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'No se pudo completar el inicio de sesión con Google.'
-        setAuthError(message)
+        setAuthError(formatAuthError(error))
       }
 
       unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -128,10 +125,7 @@ export function useAuth() {
       await registerUser()
       setJustRegistered(true)
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'No se pudo iniciar sesión con Google.'
+      const message = formatAuthError(error)
       setAuthError(message)
       throw error
     }

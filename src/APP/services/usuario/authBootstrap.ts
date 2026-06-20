@@ -1,4 +1,4 @@
-import type { AuthMode } from '../types/user'
+import type { AuthMode } from '../../types/user'
 import { finishLoginUser } from './loginUser'
 import { finishRegisterUser } from './registerUser'
 import {

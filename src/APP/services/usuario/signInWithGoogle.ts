@@ -9,7 +9,6 @@ import {
 import { auth } from '../../../firebase'
 import type { AuthMode } from '../../types/user'
 import {
-  clearAppRouteFromUrl,
   persistAppRoute,
   readAuthModeFromUrl,
   shouldOpenAppFromUrl,
@@ -144,6 +143,7 @@ export async function signInWithGoogle(mode: AuthMode): Promise<User> {
         throw error
       }
 
+      storeRedirectIntent(mode)
       await signInWithRedirect(auth, provider)
       return new Promise(() => {
         /* La página redirige a Google */
@@ -168,7 +168,8 @@ export async function resolvePendingGoogleAuth(): Promise<{
   const result = await getRedirectResultOnce()
   let user = result?.user ?? null
 
-  if (!user?.email && redirectIntent) {
+  if (!user?.email) {
+    await auth.authStateReady()
     user = auth.currentUser
   }
 
@@ -180,7 +181,6 @@ export async function resolvePendingGoogleAuth(): Promise<{
 
   markPostRedirectAppEntry(mode)
   removeAuthFlag(AUTH_MODE_KEY)
-  clearAppRouteFromUrl()
 
   return { user, mode }
 }

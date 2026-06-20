@@ -2,19 +2,24 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEv
 import type { Chat, ChatMessage, ReportReasonCode } from '../../../models'
 import { uploadChatAudio, uploadChatImage } from '../../services/cloudinary'
 import { getChat } from '../../services/chat/getChat'
+import { createAudioSessionFromChat } from '../../services/audio/createAudioSessionFromChat'
+import { createVideoSessionFromChat } from '../../services/video/createVideoSessionFromChat'
 import { sendMessage, subscribeToMessages } from '../../services/chat/messages'
 import { markChatAsRead } from '../../services/chat/unreadMessages'
 import {
   blockUser,
   ChatBlockedError,
   hasUserBlockedPartner,
+  hasUserReportedPartner,
   hideChatForUser,
   isChatBlockedBetween,
   reportUser,
+  unblockUser,
+  UserAlreadyReportedError,
 } from '../../services/moderation'
 import { setTypingStatus, subscribeToPartnerTyping } from '../../services/chat/typing'
 import { getPartnerFromChat } from '../../services/match/mapChatDocument'
-import { IconMic, IconPhoto, IconStop, IconVideo } from './ChatComposerIcons'
+import { IconMic, IconPhone, IconPhoto, IconStop, IconVideo } from './ChatComposerIcons'
 import ChatConfirmModal from './ChatConfirmModal'
 import ChatMediaPreview from './ChatMediaPreview'
 import ChatMessageBubble from './ChatMessageBubble'
@@ -27,7 +32,7 @@ const TYPING_IDLE_MS = 2500
 const BLOCKED_MESSAGE =
   'No podéis enviar mensajes. Uno de vosotros ha bloqueado al otro.'
 
-type ConfirmAction = 'block' | 'delete' | null
+type ConfirmAction = 'block' | 'unblock' | 'delete' | null
 
 function getSupportedAudioMimeType(): string | undefined {
   const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
@@ -49,9 +54,11 @@ type ChatViewProps = {
   userId: string
   chatId: string
   onBack: () => void
+  onStartVideoCall: (sessionId: string) => void
+  onStartAudioCall: (sessionId: string) => void
 }
 
-function ChatView({ userId, chatId, onBack }: ChatViewProps) {
+function ChatView({ userId, chatId, onBack, onStartVideoCall, onStartAudioCall }: ChatViewProps) {
   const [chat, setChat] = useState<Chat | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [text, setText] = useState('')
@@ -64,10 +71,13 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
   const [showPartnerProfile, setShowPartnerProfile] = useState(false)
   const [optionsOpen, setOptionsOpen] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
+  const [alreadyReportedPartner, setAlreadyReportedPartner] = useState(false)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
   const [isBlocked, setIsBlocked] = useState(false)
   const [blockedByMe, setBlockedByMe] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
+  const [videoCallLoading, setVideoCallLoading] = useState(false)
+  const [audioCallLoading, setAudioCallLoading] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -162,9 +172,11 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
     void Promise.all([
       isChatBlockedBetween(userId, currentPartner.id),
       hasUserBlockedPartner(userId, currentPartner.id),
-    ]).then(([blocked, blockedByCurrentUser]) => {
+      hasUserReportedPartner(userId, currentPartner.id),
+    ]).then(([blocked, blockedByCurrentUser, alreadyReported]) => {
       setIsBlocked(blocked)
       setBlockedByMe(blockedByCurrentUser)
+      setAlreadyReportedPartner(alreadyReported)
     })
   }, [chat, userId])
 
@@ -202,6 +214,11 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
     setConfirmAction('block')
   }
 
+  const handleUnblockRequest = () => {
+    setOptionsOpen(false)
+    setConfirmAction('unblock')
+  }
+
   const handleDeleteRequest = () => {
     setOptionsOpen(false)
     setConfirmAction('delete')
@@ -209,6 +226,12 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
 
   const handleReportOpen = () => {
     setOptionsOpen(false)
+
+    if (alreadyReportedPartner) {
+      setNotice('Ya denunciaste a esta persona. Solo puedes hacerlo una vez.')
+      return
+    }
+
     setReportOpen(true)
   }
 
@@ -226,6 +249,31 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
       setConfirmAction(null)
     } catch {
       setError('No se pudo bloquear a este usuario.')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const confirmUnblock = async () => {
+    if (!partner) return
+
+    setActionLoading(true)
+    setError(null)
+
+    try {
+      await unblockUser(userId, partner.id)
+      const stillBlocked = await isChatBlockedBetween(userId, partner.id)
+
+      setBlockedByMe(false)
+      setIsBlocked(stillBlocked)
+      setNotice(
+        stillBlocked
+          ? `Has desbloqueado a ${partner.alias}, pero esa persona aún te tiene bloqueado.`
+          : `Has desbloqueado a ${partner.alias}. Ya podéis volver a escribiros.`,
+      )
+      setConfirmAction(null)
+    } catch {
+      setError('No se pudo desbloquear a este usuario.')
     } finally {
       setActionLoading(false)
     }
@@ -263,18 +311,59 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
         motivoTexto: input.motivoTexto,
         detalle: input.detalle,
       })
+      setAlreadyReportedPartner(true)
       setReportOpen(false)
       setNotice('Denuncia enviada. Gracias por ayudarnos a cuidar la comunidad.')
-    } catch {
+    } catch (err) {
+      if (err instanceof UserAlreadyReportedError) {
+        setAlreadyReportedPartner(true)
+        setReportOpen(false)
+        setNotice('Ya denunciaste a esta persona. Solo puedes hacerlo una vez.')
+        return
+      }
+
       throw new Error('REPORT_FAILED')
     } finally {
       setActionLoading(false)
     }
   }
 
-  const handleVideoCall = () => {
+  const handleVideoCall = async () => {
+    if (!partner || isBlocked || videoCallLoading || audioCallLoading) {
+      return
+    }
+
     setOptionsOpen(false)
-    setNotice('La videollamada estará disponible muy pronto.')
+    setVideoCallLoading(true)
+    setError(null)
+
+    try {
+      const sessionId = await createVideoSessionFromChat(chatId, userId)
+      onStartVideoCall(sessionId)
+    } catch {
+      setError('No se pudo iniciar la videollamada.')
+    } finally {
+      setVideoCallLoading(false)
+    }
+  }
+
+  const handleAudioCall = async () => {
+    if (!partner || isBlocked || audioCallLoading || videoCallLoading) {
+      return
+    }
+
+    setOptionsOpen(false)
+    setAudioCallLoading(true)
+    setError(null)
+
+    try {
+      const sessionId = await createAudioSessionFromChat(chatId, userId)
+      onStartAudioCall(sessionId)
+    } catch {
+      setError('No se pudo iniciar la llamada.')
+    } finally {
+      setAudioCallLoading(false)
+    }
   }
 
   const handleTextChange = (value: string) => {
@@ -554,10 +643,20 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
         <div className="chat-view__header-actions">
           <button
             type="button"
+            className="chat-view__audio-btn"
+            aria-label="Iniciar llamada de voz"
+            disabled={isBlocked || audioCallLoading || videoCallLoading}
+            onClick={() => void handleAudioCall()}
+          >
+            <IconPhone />
+          </button>
+
+          <button
+            type="button"
             className="chat-view__video-btn"
             aria-label="Iniciar videollamada"
-            disabled={isBlocked}
-            onClick={handleVideoCall}
+            disabled={isBlocked || videoCallLoading || audioCallLoading}
+            onClick={() => void handleVideoCall()}
           >
             <IconVideo />
           </button>
@@ -576,8 +675,11 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
               open={optionsOpen}
               onClose={() => setOptionsOpen(false)}
               onBlock={handleBlockRequest}
+              onUnblock={handleUnblockRequest}
               onReport={handleReportOpen}
               onDeleteChat={handleDeleteRequest}
+              blockedByMe={blockedByMe}
+              reportDisabled={alreadyReportedPartner}
             />
           </div>
         </div>
@@ -697,6 +799,16 @@ function ChatView({ userId, chatId, onBack }: ChatViewProps) {
         loading={actionLoading}
         onClose={() => setConfirmAction(null)}
         onConfirm={() => void confirmBlock()}
+      />
+
+      <ChatConfirmModal
+        open={confirmAction === 'unblock'}
+        title={`Desbloquear a ${partner.alias}`}
+        description="Volveréis a poder enviar mensajes si la otra persona no te tiene bloqueado."
+        confirmLabel="Desbloquear"
+        loading={actionLoading}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={() => void confirmUnblock()}
       />
 
       <ChatConfirmModal

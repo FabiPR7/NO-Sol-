@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -71,4 +72,16 @@ export async function hasUserBlockedPartner(
   )
 
   return !snapshot.empty
+}
+
+export async function unblockUser(userId: string, blockedUserId: string): Promise<void> {
+  const snapshot = await getDocs(
+    query(
+      collection(db, USER_BLOCKS_COLLECTION),
+      where('user_id', '==', userId),
+      where('blocked_user_id', '==', blockedUserId),
+    ),
+  )
+
+  await Promise.all(snapshot.docs.map((document) => deleteDoc(document.ref)))
 }

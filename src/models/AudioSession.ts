@@ -1,6 +1,6 @@
-export const VIDEO_SESSIONS_COLLECTION = 'video_sessions'
+export const AUDIO_SESSIONS_COLLECTION = 'audio_sessions'
 
-export interface VideoSession {
+export interface AudioSession {
   id: string
   participante_ids: [string, string]
   participante_1_id: string
@@ -19,4 +19,4 @@ export interface VideoSession {
   creado_en: Date
 }
 
-export type VideoSessionData = Omit<VideoSession, 'id' | 'creado_en'>
+export type AudioSessionData = Omit<AudioSession, 'id' | 'creado_en'>

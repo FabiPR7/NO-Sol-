@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   serverTimestamp,
@@ -7,6 +8,14 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { HIDDEN_CHATS_SUBCOLLECTION, USERS_COLLECTION } from '../../../models'
+
+export async function revealChatForUser(userId: string, chatId: string): Promise<void> {
+  try {
+    await deleteDoc(doc(db, USERS_COLLECTION, userId, HIDDEN_CHATS_SUBCOLLECTION, chatId))
+  } catch {
+    // El chat puede no estar oculto para este usuario.
+  }
+}
 
 export async function hideChatForUser(userId: string, chatId: string): Promise<void> {
   await setDoc(doc(db, USERS_COLLECTION, userId, HIDDEN_CHATS_SUBCOLLECTION, chatId), {

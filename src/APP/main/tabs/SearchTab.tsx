@@ -2,20 +2,28 @@ import { useCallback, useState } from 'react'
 import type { Usuario } from '../../../models'
 import TabHero from '../../components/TabHero'
 import type { AppUser } from '../../types/user'
+import AudioMatchingView from '../audio/AudioMatchingView'
 import ChatMatchingView from '../chat/ChatMatchingView'
 import VideoMatchingView from '../video/VideoMatchingView'
 import './SearchTab.css'
 
-type SearchMode = 'chat' | 'video' | null
+type SearchMode = 'chat' | 'video' | 'audio' | null
 
 type SearchTabProps = {
   user: AppUser
   profile: Partial<Usuario> | null
   onMatchFound: (chatId: string) => void
   onVideoMatchFound: (sessionId: string) => void
+  onAudioMatchFound: (sessionId: string) => void
 }
 
-function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTabProps) {
+function SearchTab({
+  user,
+  profile,
+  onMatchFound,
+  onVideoMatchFound,
+  onAudioMatchFound,
+}: SearchTabProps) {
   const [searchMode, setSearchMode] = useState<SearchMode>(null)
   const [profileError, setProfileError] = useState<string | null>(null)
 
@@ -38,6 +46,14 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
       onVideoMatchFound(sessionId)
     },
     [onVideoMatchFound],
+  )
+
+  const handleAudioMatched = useCallback(
+    (sessionId: string) => {
+      setSearchMode(null)
+      onAudioMatchFound(sessionId)
+    },
+    [onAudioMatchFound],
   )
 
   const handleCancelSearch = useCallback(() => {
@@ -77,6 +93,17 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
     )
   }
 
+  if (searchMode === 'audio' && profile) {
+    return (
+      <AudioMatchingView
+        userId={user.uid}
+        profile={profile}
+        onMatched={handleAudioMatched}
+        onCancel={handleCancelSearch}
+      />
+    )
+  }
+
   return (
     <section className="search-tab">
       <TabHero
@@ -88,7 +115,7 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
             <span className="tab-hero__accent">alguien que encaje contigo</span>
           </>
         }
-        lead="Miramos tus gustos, idioma y zona para encontrar a la persona adecuada. Tú decides si prefieres chat o videollamada."
+        lead="Miramos tus gustos, idioma y zona para encontrar a la persona adecuada. Tú decides si prefieres chat, llamada o videollamada."
         tags={['Sin juicios', 'A tu ritmo', 'Conexión real']}
       />
 
@@ -111,6 +138,25 @@ function SearchTab({ user, profile, onMatchFound, onVideoMatchFound }: SearchTab
               </span>
             </div>
             <p>Os veis y os escucháis en tiempo real, como en la misma habitación.</p>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          className="search-tab__card search-tab__card--audio"
+          onClick={() => startSearch('audio')}
+        >
+          <span className="search-tab__emoji" aria-hidden="true">
+            📞
+          </span>
+          <div className="search-tab__card-body">
+            <div className="search-tab__card-head">
+              <strong>Llamada</strong>
+              <span className="search-tab__card-tag search-tab__card-tag--indigo">
+                Solo voz
+              </span>
+            </div>
+            <p>Hablad en tiempo real sin encender la cámara, con la misma calidez.</p>
           </div>
         </button>
 

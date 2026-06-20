@@ -10,10 +10,12 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import {
+  AUDIO_SESSIONS_COLLECTION,
   CHATS_COLLECTION,
   MATCH_QUEUE_COLLECTION,
   pickBestCandidate,
   VIDEO_SESSIONS_COLLECTION,
+  type AudioSessionData,
   type ChatData,
   type MatchModo,
   type MatchQueueEntry,
@@ -36,7 +38,7 @@ function buildSessionData(
   userId: string,
   seeker: MatchQueueEntry,
   partner: MatchQueueEntry,
-): VideoSessionData | ChatData {
+): VideoSessionData | AudioSessionData | ChatData {
   const base = {
     participante_ids: [userId, partner.usuario_id].sort() as [string, string],
     participante_1_id: userId,
@@ -48,7 +50,7 @@ function buildSessionData(
     activo: true,
   }
 
-  if (seeker.modo === 'video') {
+  if (seeker.modo === 'video' || seeker.modo === 'audio') {
     return {
       ...base,
       participante_1_descripcion: seeker.descripcion ?? '',
@@ -93,7 +95,11 @@ export async function attemptMatch(userId: string): Promise<string | null> {
   const sessionRef = doc(
     collection(
       db,
-      seeker.modo === 'video' ? VIDEO_SESSIONS_COLLECTION : CHATS_COLLECTION,
+      seeker.modo === 'video'
+        ? VIDEO_SESSIONS_COLLECTION
+        : seeker.modo === 'audio'
+          ? AUDIO_SESSIONS_COLLECTION
+          : CHATS_COLLECTION,
     ),
   )
 
@@ -123,5 +129,13 @@ export async function attemptMatch(userId: string): Promise<string | null> {
 }
 
 export function getMatchResultCollection(modo: MatchModo): string {
-  return modo === 'video' ? VIDEO_SESSIONS_COLLECTION : CHATS_COLLECTION
+  if (modo === 'video') {
+    return VIDEO_SESSIONS_COLLECTION
+  }
+
+  if (modo === 'audio') {
+    return AUDIO_SESSIONS_COLLECTION
+  }
+
+  return CHATS_COLLECTION
 }

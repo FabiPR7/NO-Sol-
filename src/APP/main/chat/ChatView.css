@@ -77,6 +77,7 @@
   position: relative;
 }
 
+.chat-view__audio-btn,
 .chat-view__video-btn,
 .chat-view__menu-btn {
   display: inline-flex;
@@ -88,6 +89,27 @@
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.chat-view__audio-btn {
+  background: linear-gradient(145deg, #e8ecff 0%, #ffffff 100%);
+  color: #4455b8;
+  box-shadow: 0 4px 14px rgba(91, 111, 214, 0.16);
+}
+
+.chat-view__audio-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.chat-view__audio-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(91, 111, 214, 0.22);
+}
+
+.chat-view__audio-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .chat-view__video-btn {

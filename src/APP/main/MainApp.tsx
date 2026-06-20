@@ -2,17 +2,21 @@ import { useCallback, useEffect, useState } from 'react'
 import AppLogo from '../../components/AppLogo'
 import type { Usuario } from '../../models'
 import { formatUnreadCount, subscribeToUserUnreadCounts } from '../services/chat'
+import { subscribeToIncomingAudioCalls } from '../services/audio'
+import { subscribeToIncomingVideoCalls } from '../services/video'
 import { getProfilePhotoUrl } from '../utils/profilePhoto'
 import type { AppUser } from '../types/user'
+import AudioCallView from './audio/AudioCallView'
 import ChatView from './chat/ChatView'
 import VideoCallView from './video/VideoCallView'
 import ChatsTab from './tabs/ChatsTab'
+import HistorialTab from './tabs/HistorialTab'
 import ProfileTab from './tabs/ProfileTab'
 import SearchTab from './tabs/SearchTab'
 import SettingsTab from './tabs/SettingsTab'
 import './MainApp.css'
 
-export type MainTab = 'settings' | 'search' | 'chats' | 'profile'
+export type MainTab = 'settings' | 'search' | 'chats' | 'history' | 'profile'
 
 type MainAppProps = {
   user: AppUser
@@ -25,6 +29,7 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
   const [activeTab, setActiveTab] = useState<MainTab>('search')
   const [openChatId, setOpenChatId] = useState<string | null>(null)
   const [openVideoSessionId, setOpenVideoSessionId] = useState<string | null>(null)
+  const [openAudioSessionId, setOpenAudioSessionId] = useState<string | null>(null)
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({})
   const [totalUnread, setTotalUnread] = useState(0)
   const displayName = profile?.alias ?? user.name?.split(' ')[0] ?? 'amigo'
@@ -50,6 +55,10 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
     setOpenVideoSessionId(null)
   }, [])
 
+  const closeAudioCall = useCallback(() => {
+    setOpenAudioSessionId(null)
+  }, [])
+
   const handleMatchFound = useCallback(
     (chatId: string) => {
       openChat(chatId)
@@ -61,6 +70,50 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
     setOpenVideoSessionId(sessionId)
     setActiveTab('search')
   }, [])
+
+  const handleAudioMatchFound = useCallback((sessionId: string) => {
+    setOpenAudioSessionId(sessionId)
+    setActiveTab('search')
+  }, [])
+
+  const handleStartVideoCallFromChat = useCallback((sessionId: string) => {
+    setOpenVideoSessionId(sessionId)
+  }, [])
+
+  const handleStartAudioCallFromChat = useCallback((sessionId: string) => {
+    setOpenAudioSessionId(sessionId)
+  }, [])
+
+  useEffect(() => {
+    if (openVideoSessionId || openAudioSessionId) {
+      return
+    }
+
+    const unsubscribeVideo = subscribeToIncomingVideoCalls(user.uid, (session) => {
+      setOpenVideoSessionId(session.id)
+    })
+
+    const unsubscribeAudio = subscribeToIncomingAudioCalls(user.uid, (session) => {
+      setOpenAudioSessionId(session.id)
+    })
+
+    return () => {
+      unsubscribeVideo()
+      unsubscribeAudio()
+    }
+  }, [user.uid, openVideoSessionId, openAudioSessionId])
+
+  if (openAudioSessionId) {
+    return (
+      <div className="main-app main-app--chat-open">
+        <AudioCallView
+          userId={user.uid}
+          sessionId={openAudioSessionId}
+          onBack={closeAudioCall}
+        />
+      </div>
+    )
+  }
 
   if (openVideoSessionId) {
     return (
@@ -77,7 +130,13 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
   if (openChatId) {
     return (
       <div className="main-app main-app--chat-open">
-        <ChatView userId={user.uid} chatId={openChatId} onBack={closeChat} />
+        <ChatView
+          userId={user.uid}
+          chatId={openChatId}
+          onBack={closeChat}
+          onStartVideoCall={handleStartVideoCallFromChat}
+          onStartAudioCall={handleStartAudioCallFromChat}
+        />
       </div>
     )
   }
@@ -124,12 +183,21 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
             profile={profile}
             onMatchFound={handleMatchFound}
             onVideoMatchFound={handleVideoMatchFound}
+            onAudioMatchFound={handleAudioMatchFound}
           />
         )}
         {activeTab === 'chats' && (
           <ChatsTab
             userId={user.uid}
             unreadCounts={unreadCounts}
+            onOpenChat={openChat}
+          />
+        )}
+        {activeTab === 'history' && (
+          <HistorialTab
+            userId={user.uid}
+            userAlias={profile?.alias ?? user.name ?? 'Usuario'}
+            userPhoto={avatarUrl}
             onOpenChat={openChat}
           />
         )}
@@ -187,6 +255,19 @@ function MainApp({ user, profile, onLogout, onProfileUpdated }: MainAppProps) {
             )}
           </span>
           <span>Chats</span>
+        </button>
+
+        <button
+          type="button"
+          className={`main-app__tab${
+            activeTab === 'history' ? ' main-app__tab--active' : ''
+          }`}
+          onClick={() => setActiveTab('history')}
+        >
+          <span className="main-app__tab-icon" aria-hidden="true">
+            🕘
+          </span>
+          <span>Historial</span>
         </button>
 
         <button

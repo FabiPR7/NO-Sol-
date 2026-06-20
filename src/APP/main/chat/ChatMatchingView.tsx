@@ -33,6 +33,12 @@ const MATCHING_COPY: Record<
     matched: '¡Listo! Entrando en la videollamada...',
     hint: 'Mismos filtros, gustos e idioma que en el chat.',
   },
+  audio: {
+    title: 'Preparando tu llamada',
+    searching: 'Buscando a alguien para hablar por voz...',
+    matched: '¡Listo! Entrando en la llamada...',
+    hint: 'Mismos filtros, gustos e idioma que en el chat.',
+  },
 }
 
 function MatchingView({ userId, profile, modo, onMatched, onCancel }: MatchingViewProps) {
@@ -97,6 +103,11 @@ function MatchingView({ userId, profile, modo, onMatched, onCancel }: MatchingVi
         {modo === 'video' && (
           <p className="chat-matching__hint chat-matching__hint--soft">
             En el siguiente paso conectaremos cámara y micrófono.
+          </p>
+        )}
+        {modo === 'audio' && (
+          <p className="chat-matching__hint chat-matching__hint--soft">
+            En el siguiente paso conectaremos solo el micrófono.
           </p>
         )}
 

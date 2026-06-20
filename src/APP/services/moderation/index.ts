@@ -1,6 +1,6 @@
-export { blockUser, hasUserBlockedPartner, isChatBlockedBetween } from './blockUser'
+export { blockUser, hasUserBlockedPartner, isChatBlockedBetween, unblockUser } from './blockUser'
 export { hideChatForUser, subscribeToHiddenChatIds } from './hideChat'
-export { reportUser, ChatBlockedError } from './reportUser'
+export { reportUser, ChatBlockedError, UserAlreadyReportedError, hasUserReportedPartner } from './reportUser'
 export {
   formatModerationUntil,
   getSanctionForCastigo,

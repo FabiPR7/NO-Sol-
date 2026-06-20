@@ -10,6 +10,8 @@ export { LANGUAGE_USER_COLLECTION } from './LanguageUser'
 export type { LanguageUser, LanguageUserInput } from './LanguageUser'
 export { CHATS_COLLECTION, CHAT_MESSAGES_COLLECTION, CHAT_TYPING_COLLECTION, TYPING_STALE_MS } from './Chat'
 export type { Chat, ChatData, ChatMessage, ChatMessageInput, ChatMessageTipo } from './Chat'
+export { AUDIO_SESSIONS_COLLECTION } from './AudioSession'
+export type { AudioSession, AudioSessionData } from './AudioSession'
 export { VIDEO_SESSIONS_COLLECTION } from './VideoSession'
 export type { VideoSession, VideoSessionData } from './VideoSession'
 export {
@@ -23,11 +25,13 @@ export {
 export type { MatchCandidate, MatchModo, MatchQueueEntry, MatchQueueEntryInput } from './MatchQueue'
 export type { Amigo, AmigoInput } from './Amigo'
 export type { MensajeChat, MensajeChatInput } from './MensajeChat'
-export type { HistorialLlamada, HistorialLlamadaInput } from './HistorialLlamada'
+export type { HistorialLlamada, HistorialLlamadaEstado, HistorialLlamadaInput, HistorialLlamadaTipo } from './HistorialLlamada'
+export { HISTORIAL_LLAMADAS_COLLECTION } from './HistorialLlamada'
 export type { ReporteBloqueo, ReporteBloqueoInput } from './ReporteBloqueo'
 export {
   DENUNCIAS_COLLECTION,
   HIDDEN_CHATS_SUBCOLLECTION,
+  HIDDEN_HISTORIAL_SUBCOLLECTION,
   REPORT_REASONS,
   USER_BLOCKS_COLLECTION,
 } from './Moderacion'

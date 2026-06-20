@@ -1,9 +1,9 @@
-import type { VideoSession } from '../../../models'
+import type { AudioSession } from '../../../models'
 
-export function mapVideoSessionDocument(
+export function mapAudioSessionDocument(
   id: string,
   data: Record<string, unknown>,
-): VideoSession {
+): AudioSession {
   return {
     id,
     participante_ids: data.participante_ids as [string, string],
@@ -25,7 +25,7 @@ export function mapVideoSessionDocument(
   }
 }
 
-export function getPartnerFromVideoSession(session: VideoSession, userId: string) {
+export function getPartnerFromAudioSession(session: AudioSession, userId: string) {
   if (session.participante_1_id === userId) {
     return {
       id: session.participante_2_id,

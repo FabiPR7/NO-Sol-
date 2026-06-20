@@ -1,6 +1,7 @@
 export const USER_BLOCKS_COLLECTION = 'user_blocks'
 export const DENUNCIAS_COLLECTION = 'denuncias'
 export const HIDDEN_CHATS_SUBCOLLECTION = 'chats_ocultos'
+export const HIDDEN_HISTORIAL_SUBCOLLECTION = 'historial_oculto'
 
 export type ReportReasonCode = '1' | '2' | '3' | '4' | '5' | '6'
 

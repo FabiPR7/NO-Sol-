@@ -5,16 +5,22 @@ type ChatOptionsMenuProps = {
   open: boolean
   onClose: () => void
   onBlock: () => void
+  onUnblock: () => void
   onReport: () => void
   onDeleteChat: () => void
+  blockedByMe?: boolean
+  reportDisabled?: boolean
 }
 
 function ChatOptionsMenu({
   open,
   onClose,
   onBlock,
+  onUnblock,
   onReport,
   onDeleteChat,
+  blockedByMe = false,
+  reportDisabled = false,
 }: ChatOptionsMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -48,13 +54,27 @@ function ChatOptionsMenu({
 
   return (
     <div className="chat-options-menu" ref={menuRef}>
-      <button type="button" className="chat-options-menu__item" onClick={onBlock}>
-        <span aria-hidden="true">🚫</span>
-        Bloquear
-      </button>
-      <button type="button" className="chat-options-menu__item" onClick={onReport}>
+      {blockedByMe ? (
+        <button type="button" className="chat-options-menu__item" onClick={onUnblock}>
+          <span aria-hidden="true">🔓</span>
+          Desbloquear
+        </button>
+      ) : (
+        <button type="button" className="chat-options-menu__item" onClick={onBlock}>
+          <span aria-hidden="true">🚫</span>
+          Bloquear
+        </button>
+      )}
+      <button
+        type="button"
+        className={`chat-options-menu__item${
+          reportDisabled ? ' chat-options-menu__item--disabled' : ''
+        }`}
+        disabled={reportDisabled}
+        onClick={onReport}
+      >
         <span aria-hidden="true">⚠️</span>
-        Denunciar
+        {reportDisabled ? 'Ya denunciado' : 'Denunciar'}
       </button>
       <button
         type="button"

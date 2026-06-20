@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -11,6 +12,8 @@ import { db } from '../../../firebase'
 import {
   CHAT_MESSAGES_COLLECTION,
   CHATS_COLLECTION,
+  HIDDEN_CHATS_SUBCOLLECTION,
+  USERS_COLLECTION,
   type ChatMessage,
   type ChatMessageInput,
   type ChatMessageTipo,
@@ -25,13 +28,33 @@ function mapMessageTipo(value: unknown): ChatMessageTipo {
   return 'texto'
 }
 
+function getPartnerIdFromChatData(
+  participanteIds: string[],
+  senderId: string,
+): string | null {
+  const partnerId = participanteIds.find((id) => id !== senderId)
+  return partnerId ?? null
+}
+
 export async function sendMessage(
   chatId: string,
   message: ChatMessageInput,
   partnerId?: string,
 ): Promise<void> {
-  if (partnerId) {
-    const blocked = await isChatBlockedBetween(message.emisor_id, partnerId)
+  const chatRef = doc(db, CHATS_COLLECTION, chatId)
+  const chatSnapshot = await getDoc(chatRef)
+
+  if (!chatSnapshot.exists()) {
+    throw new Error('No se encontró la conversación.')
+  }
+
+  const chatData = chatSnapshot.data()
+  const participanteIds = chatData.participante_ids as string[]
+  const recipientId =
+    partnerId ?? getPartnerIdFromChatData(participanteIds, message.emisor_id)
+
+  if (recipientId) {
+    const blocked = await isChatBlockedBetween(message.emisor_id, recipientId)
 
     if (blocked) {
       throw new ChatBlockedError()
@@ -39,7 +62,6 @@ export async function sendMessage(
   }
 
   const messageRef = doc(collection(db, CHATS_COLLECTION, chatId, CHAT_MESSAGES_COLLECTION))
-  const chatRef = doc(db, CHATS_COLLECTION, chatId)
   const batch = writeBatch(db)
 
   batch.set(messageRef, {
@@ -52,11 +74,22 @@ export async function sendMessage(
   })
 
   batch.update(chatRef, {
+    activo: true,
     ultimo_mensaje_tipo: message.tipo,
     ultimo_mensaje_contenido: message.contenido ?? '',
     ultimo_mensaje_emisor_id: message.emisor_id,
     ultimo_mensaje_en: serverTimestamp(),
   })
+
+  if (recipientId) {
+    batch.delete(
+      doc(db, USERS_COLLECTION, recipientId, HIDDEN_CHATS_SUBCOLLECTION, chatId),
+    )
+  }
+
+  batch.delete(
+    doc(db, USERS_COLLECTION, message.emisor_id, HIDDEN_CHATS_SUBCOLLECTION, chatId),
+  )
 
   await batch.commit()
 }

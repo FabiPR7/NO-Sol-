@@ -10,10 +10,14 @@ type DailyErrorResponse = {
   info?: string
 }
 
-export function toDailyRoomName(sessionId: string): string {
+export function toDailyRoomName(
+  sessionId: string,
+  variant: 'video' | 'audio' = 'video',
+): string {
   const sanitized = sessionId.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase()
+  const prefix = variant === 'audio' ? 'nosolo-audio' : 'nosolo'
 
-  return `nosolo-${sanitized.slice(0, 48)}`
+  return `${prefix}-${sanitized.slice(0, 44)}`
 }
 
 export function formatDailyUserMessage(raw: string): string {
@@ -77,7 +81,10 @@ async function fetchDailyRoom(roomName: string): Promise<DailyRoomResponse | nul
   return (await response.json()) as DailyRoomResponse
 }
 
-async function createDailyRoom(roomName: string): Promise<DailyRoomResponse> {
+async function createDailyRoom(
+  roomName: string,
+  audioOnly = false,
+): Promise<DailyRoomResponse> {
   const expiresAt = Math.floor(Date.now() / 1000) + 2 * 60 * 60
 
   const response = await fetch(`${DAILY_PROXY_BASE}/rooms`, {
@@ -90,7 +97,7 @@ async function createDailyRoom(roomName: string): Promise<DailyRoomResponse> {
       properties: {
         exp: expiresAt,
         max_participants: 2,
-        start_video_off: false,
+        start_video_off: audioOnly,
         start_audio_off: false,
       },
     }),
@@ -111,14 +118,17 @@ async function createDailyRoom(roomName: string): Promise<DailyRoomResponse> {
   throw new Error(await parseDailyError(response))
 }
 
-export async function getOrCreateDailyRoomUrl(sessionId: string): Promise<string> {
-  const roomName = toDailyRoomName(sessionId)
+export async function getOrCreateDailyRoomUrl(
+  sessionId: string,
+  variant: 'video' | 'audio' = 'video',
+): Promise<string> {
+  const roomName = toDailyRoomName(sessionId, variant)
   const existingRoom = await fetchDailyRoom(roomName)
 
   if (existingRoom?.url) {
     return existingRoom.url
   }
 
-  const createdRoom = await createDailyRoom(roomName)
+  const createdRoom = await createDailyRoom(roomName, variant === 'audio')
   return createdRoom.url
 }

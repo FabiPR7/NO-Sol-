@@ -76,6 +76,11 @@
   color: var(--color-coral-dark);
 }
 
+.search-tab__card-tag--indigo {
+  background: rgba(91, 111, 214, 0.16);
+  color: #4455b8;
+}
+
 .search-tab__card p {
   margin: 0;
   font-size: 0.92rem;
@@ -92,6 +97,12 @@
   background: linear-gradient(135deg, var(--color-teal-pastel-light) 0%, var(--color-white) 100%);
   border: 1px solid rgba(58, 142, 138, 0.14);
   box-shadow: 0 12px 32px rgba(155, 196, 193, 0.22);
+}
+
+.search-tab__card--audio {
+  background: linear-gradient(135deg, #e8ecff 0%, var(--color-white) 100%);
+  border: 1px solid rgba(91, 111, 214, 0.14);
+  box-shadow: 0 12px 32px rgba(91, 111, 214, 0.16);
 }
 
 .search-tab__card--chat {

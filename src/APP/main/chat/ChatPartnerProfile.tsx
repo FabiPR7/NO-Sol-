@@ -9,6 +9,7 @@ type ChatPartnerProfileProps = {
   partnerAlias: string
   partnerPhoto: string
   onBack: () => void
+  backAriaLabel?: string
 }
 
 function ChatPartnerProfile({
@@ -16,6 +17,7 @@ function ChatPartnerProfile({
   partnerAlias,
   partnerPhoto,
   onBack,
+  backAriaLabel = 'Volver al chat',
 }: ChatPartnerProfileProps) {
   const [descripcion, setDescripcion] = useState<string | null>(null)
   const [interests, setInterests] = useState<Interes[]>([])
@@ -45,7 +47,7 @@ function ChatPartnerProfile({
           type="button"
           className="chat-partner-profile__back"
           onClick={onBack}
-          aria-label="Volver al chat"
+          aria-label={backAriaLabel}
         >
           ←
         </button>

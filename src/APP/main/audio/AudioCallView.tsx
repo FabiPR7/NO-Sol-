@@ -5,20 +5,20 @@ import Daily, {
   type DailyParticipant,
 } from '@daily-co/daily-js'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { HistorialLlamadaEstado, VideoSession } from '../../../models'
-import { recordCallHistory } from '../../services/callHistory'
+import type { AudioSession, HistorialLlamadaEstado } from '../../../models'
 import {
-  acceptVideoCall,
-  endVideoSession,
-  ensureVideoSessionRoom,
-  getVideoSession,
-  subscribeToVideoSession,
-} from '../../services/video'
+  acceptAudioCall,
+  endAudioSession,
+  ensureAudioSessionRoom,
+  getAudioSession,
+  getPartnerFromAudioSession,
+  subscribeToAudioSession,
+} from '../../services/audio'
+import { recordCallHistory } from '../../services/callHistory'
 import { formatDailyUserMessage } from '../../services/video/dailyApi'
-import { getPartnerFromVideoSession } from '../../services/video/mapVideoSessionDocument'
-import './VideoCallView.css'
+import './AudioCallView.css'
 
-type VideoCallViewProps = {
+type AudioCallViewProps = {
   userId: string
   sessionId: string
   onBack: () => void
@@ -26,14 +26,11 @@ type VideoCallViewProps = {
 
 type CallPhase = 'loading' | 'calling' | 'invite' | 'prejoin' | 'incall'
 
-function attachParticipantMedia(
+function attachParticipantAudio(
   participant: DailyParticipant,
-  localVideo: HTMLVideoElement | null,
-  remoteVideo: HTMLVideoElement | null,
+  remoteAudio: HTMLAudioElement | null,
 ) {
-  const element = participant.local ? localVideo : remoteVideo
-
-  if (!element) {
+  if (participant.local || !remoteAudio) {
     return
   }
 
@@ -45,58 +42,41 @@ function attachParticipantMedia(
     return
   }
 
-  element.srcObject = new MediaStream(tracks)
-  void element.play().catch(() => {})
+  remoteAudio.srcObject = new MediaStream(tracks)
+  void remoteAudio.play().catch(() => {})
 }
 
-function attachTrackToVideo(
-  event: DailyEventObjectTrack,
-  localVideo: HTMLVideoElement | null,
-  remoteVideo: HTMLVideoElement | null,
-) {
-  if (!event.participant || !event.track) {
+function attachTrackToAudio(event: DailyEventObjectTrack, remoteAudio: HTMLAudioElement | null) {
+  if (!event.participant || event.participant.local || !event.track || !remoteAudio) {
     return
   }
 
-  const element = event.participant.local ? localVideo : remoteVideo
-
-  if (!element) {
-    return
-  }
-
-  let stream = element.srcObject as MediaStream | null
+  let stream = remoteAudio.srcObject as MediaStream | null
 
   if (!stream) {
     stream = new MediaStream()
-    element.srcObject = stream
+    remoteAudio.srcObject = stream
   }
 
   if (!stream.getTracks().some((track) => track.id === event.track.id)) {
     stream.addTrack(event.track)
   }
 
-  void element.play().catch(() => {})
+  void remoteAudio.play().catch(() => {})
 }
 
-function detachTrackFromVideo(
-  event: DailyEventObjectTrack,
-  localVideo: HTMLVideoElement | null,
-  remoteVideo: HTMLVideoElement | null,
-) {
-  if (!event.participant || !event.track) {
+function detachTrackFromAudio(event: DailyEventObjectTrack, remoteAudio: HTMLAudioElement | null) {
+  if (!event.participant || event.participant.local || !event.track || !remoteAudio) {
     return
   }
 
-  const element = event.participant.local ? localVideo : remoteVideo
-  const stream = element?.srcObject as MediaStream | null
+  const stream = remoteAudio.srcObject as MediaStream | null
 
   if (!stream) {
     return
   }
 
-  const track = stream
-    .getTracks()
-    .find((currentTrack) => currentTrack.id === event.track.id)
+  const track = stream.getTracks().find((currentTrack) => currentTrack.id === event.track.id)
 
   if (track) {
     stream.removeTrack(track)
@@ -136,19 +116,15 @@ function getMediaErrorMessage(error: unknown): string {
 
   if (error instanceof DOMException) {
     if (error.name === 'NotAllowedError') {
-      return 'Permiso denegado. Pulsa el candado en la barra de direcciones y permite cámara y micrófono para este sitio.'
+      return 'Permiso denegado. Pulsa el candado en la barra de direcciones y permite el micrófono para este sitio.'
     }
 
     if (error.name === 'NotFoundError') {
-      return 'No se encontró cámara o micrófono en este dispositivo.'
+      return 'No se encontró micrófono en este dispositivo.'
     }
 
     if (error.name === 'NotReadableError') {
-      return 'La cámara o el micrófono están en uso por otra aplicación.'
-    }
-
-    if (error.name === 'OverconstrainedError') {
-      return 'Tu cámara no admite la configuración pedida. Prueba con otro navegador o dispositivo.'
+      return 'El micrófono está en uso por otra aplicación.'
     }
   }
 
@@ -156,7 +132,7 @@ function getMediaErrorMessage(error: unknown): string {
     return formatDailyUserMessage(error.message)
   }
 
-  return 'No se pudo activar la cámara ni el micrófono.'
+  return 'No se pudo activar el micrófono.'
 }
 
 function getCameraErrorMessage(event: DailyEventObjectCameraError): string {
@@ -170,10 +146,10 @@ function getCameraErrorMessage(event: DailyEventObjectCameraError): string {
     return event.errorMsg.errorMsg
   }
 
-  return 'No se pudo acceder a la cámara o al micrófono.'
+  return 'No se pudo acceder al micrófono.'
 }
 
-async function checkMediaPermissionsGranted(): Promise<boolean> {
+async function checkMicrophonePermissionGranted(): Promise<boolean> {
   if (!navigator.mediaDevices?.getUserMedia) {
     return false
   }
@@ -183,12 +159,11 @@ async function checkMediaPermissionsGranted(): Promise<boolean> {
   }
 
   try {
-    const [camera, microphone] = await Promise.all([
-      navigator.permissions.query({ name: 'camera' as PermissionName }),
-      navigator.permissions.query({ name: 'microphone' as PermissionName }),
-    ])
+    const microphone = await navigator.permissions.query({
+      name: 'microphone' as PermissionName,
+    })
 
-    return camera.state === 'granted' && microphone.state === 'granted'
+    return microphone.state === 'granted'
   } catch {
     return false
   }
@@ -257,22 +232,21 @@ async function destroyDailyCall(callObjectRef?: { current: DailyCall | null }) {
 function assertSecureContext() {
   if (!window.isSecureContext) {
     throw new Error(
-      'La cámara requiere HTTPS. Abre la app con https://localhost:5173 o https://TU-IP:5173 (no http).',
+      'El micrófono requiere HTTPS. Abre la app con https://localhost:5173 o https://TU-IP:5173 (no http).',
     )
   }
 
   if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error('Tu navegador no permite usar cámara ni micrófono.')
+    throw new Error('Tu navegador no permite usar el micrófono.')
   }
 }
 
-function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
-  const localVideoRef = useRef<HTMLVideoElement>(null)
-  const remoteVideoRef = useRef<HTMLVideoElement>(null)
+function AudioCallView({ userId, sessionId, onBack }: AudioCallViewProps) {
+  const remoteAudioRef = useRef<HTMLAudioElement>(null)
   const callObjectRef = useRef<DailyCall | null>(null)
   const isStartingRef = useRef(false)
   const endingLocallyRef = useRef(false)
-  const sessionRef = useRef<VideoSession | null>(null)
+  const sessionRef = useRef<AudioSession | null>(null)
   const connectedAtRef = useRef<Date | null>(null)
   const callerJoinTriggeredRef = useRef(false)
   const [phase, setPhase] = useState<CallPhase>('loading')
@@ -302,7 +276,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
         try {
           await recordCallHistory({
             session,
-            tipo: 'video',
+            tipo: 'audio',
             finalizadaPorId: userId,
             estado,
             duracionSegundos,
@@ -314,7 +288,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
       }
 
       await destroyDailyCall(callObjectRef)
-      await endVideoSession(sessionId)
+      await endAudioSession(sessionId)
       onBack()
     },
     [onBack, sessionId, userId],
@@ -325,11 +299,11 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
     const prepareCall = async () => {
       try {
-        const session = await getVideoSession(sessionId)
+        const session = await getAudioSession(sessionId)
 
         if (!session || !session.activo) {
           if (!cancelled) {
-            setError('No se encontró la videollamada.')
+            setError('No se encontró la llamada.')
             setPhase('invite')
           }
           return
@@ -337,7 +311,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
         sessionRef.current = session
 
-        const partner = getPartnerFromVideoSession(session, userId)
+        const partner = getPartnerFromAudioSession(session, userId)
 
         if (!cancelled) {
           setPartnerAlias(partner.alias)
@@ -346,7 +320,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
           setPhase(session.iniciador_id === userId ? 'calling' : 'invite')
         }
 
-        const url = await ensureVideoSessionRoom(sessionId)
+        const url = await ensureAudioSessionRoom(sessionId)
 
         if (!cancelled) {
           setRoomUrl(url)
@@ -354,7 +328,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
       } catch (err) {
         if (!cancelled) {
           const message =
-            err instanceof Error ? err.message : 'No se pudo preparar la videollamada.'
+            err instanceof Error ? err.message : 'No se pudo preparar la llamada.'
           setError(message)
           setPhase('invite')
         }
@@ -369,7 +343,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
   }, [sessionId, userId])
 
   useEffect(() => {
-    return subscribeToVideoSession(sessionId, (session) => {
+    return subscribeToAudioSession(sessionId, (session) => {
       if (endingLocallyRef.current) {
         return
       }
@@ -392,7 +366,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
         void (async () => {
           setError(null)
 
-          const permissionsGranted = await checkMediaPermissionsGranted()
+          const permissionsGranted = await checkMicrophonePermissionGranted()
 
           if (permissionsGranted) {
             void handleStartCall()
@@ -430,7 +404,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
       const callObject = Daily.createCallObject({
         allowMultipleCallInstances: true,
-        videoSource: true,
+        videoSource: false,
         audioSource: true,
         subscribeToTracksAutomatically: true,
       })
@@ -454,22 +428,18 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
       }
 
       const onTrackStarted = (event: DailyEventObjectTrack) => {
-        attachTrackToVideo(event, localVideoRef.current, remoteVideoRef.current)
+        attachTrackToAudio(event, remoteAudioRef.current)
       }
 
       const onTrackStopped = (event: DailyEventObjectTrack) => {
-        detachTrackFromVideo(event, localVideoRef.current, remoteVideoRef.current)
+        detachTrackFromAudio(event, remoteAudioRef.current)
       }
 
       const onJoinedMeeting = () => {
         connectedAtRef.current = new Date()
 
         Object.values(callObject.participants()).forEach((participant) => {
-          attachParticipantMedia(
-            participant,
-            localVideoRef.current,
-            remoteVideoRef.current,
-          )
+          attachParticipantAudio(participant, remoteAudioRef.current)
         })
 
         setJoining(false)
@@ -481,11 +451,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
           return
         }
 
-        attachParticipantMedia(
-          event.participant,
-          localVideoRef.current,
-          remoteVideoRef.current,
-        )
+        attachParticipantAudio(event.participant, remoteAudioRef.current)
 
         if (!event.participant.local) {
           setRemoteConnected(true)
@@ -496,8 +462,8 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
         if (!event.participant?.local) {
           setRemoteConnected(false)
 
-          if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = null
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = null
           }
         }
       }
@@ -507,7 +473,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
       }
 
       const onError = (event: { errorMsg?: string }) => {
-        failCall(event.errorMsg ?? 'Error en la videollamada.')
+        failCall(event.errorMsg ?? 'Error en la llamada.')
       }
 
       callObject.on('track-started', onTrackStarted)
@@ -520,7 +486,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
       await callObject.join({
         url: roomUrl,
-        startVideoOff: false,
+        startVideoOff: true,
         startAudioOff: false,
       })
     } catch (err) {
@@ -539,10 +505,10 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
     setError(null)
 
     if (sessionRef.current?.iniciador_id && sessionRef.current.iniciador_id !== userId) {
-      await acceptVideoCall(sessionId)
+      await acceptAudioCall(sessionId)
     }
 
-    const permissionsGranted = await checkMediaPermissionsGranted()
+    const permissionsGranted = await checkMicrophonePermissionGranted()
 
     if (permissionsGranted) {
       void handleStartCall()
@@ -560,12 +526,8 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
     setEnding(true)
 
     try {
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = null
-      }
-
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = null
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.srcObject = null
       }
 
       await endForEveryone('completada')
@@ -582,7 +544,7 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
     }
 
     if (remoteConnected) {
-      return 'Videollamada en curso'
+      return 'Llamada en curso'
     }
 
     return `Esperando a ${partnerAlias || 'tu compañero'}...`
@@ -592,44 +554,44 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
   if (phase === 'loading') {
     return (
-      <section className="video-call">
-        <p className="video-call__loading">Preparando videollamada...</p>
+      <section className="audio-call">
+        <p className="audio-call__loading">Preparando llamada...</p>
       </section>
     )
   }
 
   if (phase === 'calling') {
     return (
-      <section className="video-call">
-        <div className="video-call__invite video-call__calling">
-          {error && <p className="video-call__invite-error">{error}</p>}
+      <section className="audio-call">
+        <div className="audio-call__invite audio-call__calling">
+          {error && <p className="audio-call__invite-error">{error}</p>}
 
-          <div className="video-call__calling-avatar-wrap">
+          <div className="audio-call__calling-avatar-wrap">
             {partnerPhoto ? (
               <img
-                className="video-call__invite-avatar"
+                className="audio-call__invite-avatar"
                 src={partnerPhoto}
                 alt={partnerAlias}
               />
             ) : (
-              <span className="video-call__invite-avatar video-call__invite-avatar--fallback">
+              <span className="audio-call__invite-avatar audio-call__invite-avatar--fallback">
                 {partnerInitial}
               </span>
             )}
           </div>
 
-          <h2 className="video-call__invite-title">
+          <h2 className="audio-call__invite-title">
             Llamando a <strong>{partnerAlias}</strong>...
           </h2>
 
-          <p className="video-call__invite-bio">
-            Esperando a que acepte la videollamada.
+          <p className="audio-call__invite-bio">
+            Esperando a que acepte la llamada.
           </p>
 
-          <div className="video-call__invite-actions video-call__invite-actions--single">
+          <div className="audio-call__invite-actions audio-call__invite-actions--single">
             <button
               type="button"
-              className="video-call__invite-btn video-call__invite-btn--reject"
+              className="audio-call__invite-btn audio-call__invite-btn--reject"
               onClick={() => void endForEveryone('cancelada')}
             >
               Cancelar
@@ -642,45 +604,45 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
   if (phase === 'invite') {
     return (
-      <section className="video-call">
-        <div className="video-call__invite">
-          {error && <p className="video-call__invite-error">{error}</p>}
+      <section className="audio-call">
+        <div className="audio-call__invite">
+          {error && <p className="audio-call__invite-error">{error}</p>}
 
           {partnerPhoto ? (
             <img
-              className="video-call__invite-avatar"
+              className="audio-call__invite-avatar"
               src={partnerPhoto}
               alt={partnerAlias}
             />
           ) : (
-            <span className="video-call__invite-avatar video-call__invite-avatar--fallback">
+            <span className="audio-call__invite-avatar audio-call__invite-avatar--fallback">
               {partnerInitial}
             </span>
           )}
 
-          <h2 className="video-call__invite-title">
-            ¿Aceptas la videollamada con <strong>{partnerAlias}</strong>?
+          <h2 className="audio-call__invite-title">
+            ¿Aceptas la llamada con <strong>{partnerAlias}</strong>?
           </h2>
 
           {partnerDescription ? (
-            <p className="video-call__invite-bio">{partnerDescription}</p>
+            <p className="audio-call__invite-bio">{partnerDescription}</p>
           ) : (
-            <p className="video-call__invite-bio video-call__invite-bio--muted">
+            <p className="audio-call__invite-bio audio-call__invite-bio--muted">
               Sin descripción en el perfil.
             </p>
           )}
 
-          <div className="video-call__invite-actions">
+          <div className="audio-call__invite-actions">
             <button
               type="button"
-              className="video-call__invite-btn video-call__invite-btn--reject"
+              className="audio-call__invite-btn audio-call__invite-btn--reject"
               onClick={handleReject}
             >
               Rechazar
             </button>
             <button
               type="button"
-              className="video-call__invite-btn video-call__invite-btn--accept"
+              className="audio-call__invite-btn audio-call__invite-btn--accept"
               disabled={!roomUrl}
               onClick={() => void handleAccept()}
             >
@@ -694,39 +656,39 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
 
   if (phase === 'prejoin') {
     return (
-      <section className="video-call">
-        <header className="video-call__header">
-          <div className="video-call__header-info">
+      <section className="audio-call">
+        <header className="audio-call__header">
+          <div className="audio-call__header-info">
             <strong>{partnerAlias}</strong>
-            <span>Permisos de cámara y micrófono</span>
+            <span>Permiso de micrófono</span>
           </div>
         </header>
 
-        <div className="video-call__prejoin">
-          <p className="video-call__prejoin-text">
-            Para entrar en la videollamada necesitamos acceso a tu cámara y
-            micrófono. El navegador solo lo pedirá esta vez.
+        <div className="audio-call__prejoin">
+          <p className="audio-call__prejoin-text">
+            Para entrar en la llamada necesitamos acceso a tu micrófono. El
+            navegador solo lo pedirá esta vez.
           </p>
           {!window.isSecureContext && (
-            <p className="video-call__prejoin-warning">
+            <p className="audio-call__prejoin-warning">
               Estás en HTTP (no seguro). Entra con{' '}
               <strong>https://localhost:5173</strong> o{' '}
               <strong>https://TU-IP:5173</strong>.
             </p>
           )}
-          {error && <p className="video-call__prejoin-error">{error}</p>}
+          {error && <p className="audio-call__prejoin-error">{error}</p>}
           <button
             type="button"
-            className="video-call__start-btn"
+            className="audio-call__start-btn"
             disabled={!roomUrl || joining}
             onClick={() => void handleStartCall()}
           >
-            Activar cámara y entrar
+            Activar micrófono y entrar
           </button>
         </div>
 
-        <footer className="video-call__controls">
-          <button type="button" className="video-call__back-btn" onClick={() => void endForEveryone('cancelada')}>
+        <footer className="audio-call__controls">
+          <button type="button" className="audio-call__back-btn" onClick={() => void endForEveryone('cancelada')}>
             Cancelar
           </button>
         </footer>
@@ -735,45 +697,48 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
   }
 
   return (
-    <section className="video-call">
-      <header className="video-call__header">
-        <div className="video-call__header-info">
+    <section className="audio-call">
+      <header className="audio-call__header">
+        <div className="audio-call__header-info">
           <strong>{partnerAlias}</strong>
           <span>{statusLabel}</span>
         </div>
       </header>
 
-      <div className="video-call__stage">
-        <video
-          ref={remoteVideoRef}
-          className="video-call__remote"
-          autoPlay
-          playsInline
-        />
+      <div className="audio-call__stage">
+        <div
+          className={`audio-call__avatar-wrap${
+            remoteConnected ? ' audio-call__avatar-wrap--live' : ''
+          }`}
+        >
+          {partnerPhoto ? (
+            <img className="audio-call__avatar" src={partnerPhoto} alt={partnerAlias} />
+          ) : (
+            <span className="audio-call__avatar audio-call__avatar--fallback">
+              {partnerInitial}
+            </span>
+          )}
+          <span className="audio-call__phone-icon" aria-hidden="true">
+            📞
+          </span>
+        </div>
+
         {!remoteConnected && !joining && (
-          <p className="video-call__waiting">
-            Cuando {partnerAlias || 'tu compañero'} entre, verás su cámara aquí.
+          <p className="audio-call__waiting">
+            Cuando {partnerAlias || 'tu compañero'} entre, escucharás su voz.
           </p>
         )}
-        <video
-          ref={localVideoRef}
-          className="video-call__local"
-          autoPlay
-          playsInline
-          muted
-        />
-        {joining && (
-          <p className="video-call__joining">Activando cámara y micrófono...</p>
-        )}
-        {error && (
-          <p className="video-call__inline-error">{error}</p>
-        )}
+
+        {joining && <p className="audio-call__joining">Activando micrófono...</p>}
+        {error && <p className="audio-call__inline-error">{error}</p>}
       </div>
 
-      <footer className="video-call__controls">
+      <audio ref={remoteAudioRef} autoPlay playsInline />
+
+      <footer className="audio-call__controls">
         <button
           type="button"
-          className="video-call__hangup"
+          className="audio-call__hangup"
           disabled={ending || joining}
           onClick={() => void handleHangUp()}
         >
@@ -784,4 +749,4 @@ function VideoCallView({ userId, sessionId, onBack }: VideoCallViewProps) {
   )
 }
 
-export default VideoCallView
+export default AudioCallView

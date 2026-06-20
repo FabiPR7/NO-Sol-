@@ -44,3 +44,14 @@
 .chat-options-menu__item--danger:hover {
   background: var(--color-error-bg);
 }
+
+.chat-options-menu__item--disabled,
+.chat-options-menu__item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.chat-options-menu__item--disabled:hover,
+.chat-options-menu__item:disabled:hover {
+  background: transparent;
+}

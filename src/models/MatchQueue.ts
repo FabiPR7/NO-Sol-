@@ -4,7 +4,7 @@ export const MATCH_QUEUE_COLLECTION = 'match_queue'
 
 export const ADULT_AGE_THRESHOLD = 18
 
-export type MatchModo = 'chat' | 'video'
+export type MatchModo = 'chat' | 'video' | 'audio'
 
 export interface MatchQueueEntry {
   usuario_id: string

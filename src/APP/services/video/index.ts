@@ -1,4 +1,7 @@
+export { acceptVideoCall } from './acceptVideoCall'
+export { createVideoSessionFromChat, isIncomingChatVideoCall } from './createVideoSessionFromChat'
 export { getVideoSession, endVideoSession, subscribeToVideoSession } from './getVideoSession'
 export { ensureVideoSessionRoom } from './ensureVideoSessionRoom'
 export { getOrCreateDailyRoomUrl, toDailyRoomName } from './dailyApi'
 export { getPartnerFromVideoSession, mapVideoSessionDocument } from './mapVideoSessionDocument'
+export { subscribeToIncomingVideoCalls } from './subscribeToIncomingVideoCalls'

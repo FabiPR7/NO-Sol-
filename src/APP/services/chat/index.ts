@@ -1,3 +1,4 @@
+export { findChatIdWithPartner, findOrCreateChatWithPartner } from './findOrCreateChatWithPartner'
 export { getChat } from './getChat'
 export { listUserChats, subscribeToUserChats } from './listUserChats'
 export { sendMessage, subscribeToMessages } from './messages'

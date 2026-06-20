@@ -130,9 +130,9 @@
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
-  padding: 0.45rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
+  padding: 0.45rem 0.5rem calc(0.65rem + env(safe-area-inset-bottom));
   background: linear-gradient(
     180deg,
     rgba(255, 252, 250, 0.94) 0%,
@@ -148,11 +148,11 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.55rem 0.5rem;
+  padding: 0.5rem 0.25rem;
   border: none;
   background: transparent;
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-ink-soft);
